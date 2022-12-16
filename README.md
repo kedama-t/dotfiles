@@ -1,1 +1,1 @@
-for neovim
+for neovim/tmux
