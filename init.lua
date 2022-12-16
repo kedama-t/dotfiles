@@ -58,9 +58,32 @@ require('nvim-treesitter.configs').setup {
 }
 
 -- outline
-keymap.set('n', '<Leader>o',':AerialToggle right<CR>')
-keymap.set('n', '<C-n>',':AerialNext<CR>')
-keymap.set('n', '<C-b>',':AerialPrev<CR>')
+keymap.set('n', '<Leader>o', ':AerialToggle right<CR>')
+keymap.set('n', '<C-m>', ':AerialNext<CR>')
+keymap.set('n', '<C-n>', ':AerialPrev<CR>')
+
+-- indent
+vim.cmd [[highlight IndentBlanklineIndent3 guibg=#3d0a08 gui=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent4 guibg=#2d2d07 gui=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent2 guibg=#402D09 gui=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent1 guibg=#142728 gui=nocombine]]
+
+require("indent_blankline").setup {
+  char = "",
+  char_highlight_list = {
+    "IndentBlanklineIndent1",
+    "IndentBlanklineIndent2",
+    "IndentBlanklineIndent3",
+    "IndentBlanklineIndent4",
+  },
+  space_char_highlight_list = {
+    "IndentBlanklineIndent1",
+    "IndentBlanklineIndent2",
+    "IndentBlanklineIndent3",
+    "IndentBlanklineIndent4",
+  },
+  show_trailing_blankline_indent = false,
+}
 
 -- label jump
 keymap.set('n', '<Leader>m', ':HopWord<CR>')
@@ -184,7 +207,8 @@ local on_attach = function(client, bufnr)
   --api.nvim_buf_set_keymap(bufnr, 'n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
   api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
   api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-  api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+  api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>wl',
+    '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
   api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
   api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
   api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
@@ -196,7 +220,7 @@ local on_attach = function(client, bufnr)
 end
 
 local lspConfig = require('lspconfig')
-local servers = { 'volar', 'tsserver', 'eslint','dartls','golangci_lint_ls','gopls'}
+local servers = { 'volar', 'tsserver', 'eslint', 'dartls', 'golangci_lint_ls', 'gopls' }
 local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 for _, lsp in pairs(servers) do
   lspConfig[lsp].setup {

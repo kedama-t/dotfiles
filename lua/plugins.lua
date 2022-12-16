@@ -41,6 +41,8 @@ return require('packer').startup(
       'stevearc/aerial.nvim',
       config = function() require('aerial').setup() end
     }
+    -- indent
+          use "lukas-reineke/indent-blankline.nvim"
 
     -- fuzzy finder
     use { 'junegunn/fzf', run = './install --bin', }
