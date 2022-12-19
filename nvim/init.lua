@@ -59,14 +59,12 @@ require('nvim-treesitter.configs').setup {
 
 -- outline
 keymap.set('n', '<Leader>o', ':AerialToggle right<CR>')
-keymap.set('n', '<C-m>', ':AerialNext<CR>')
-keymap.set('n', '<C-n>', ':AerialPrev<CR>')
 
 -- indent
+vim.cmd [[highlight IndentBlanklineIndent1 guibg=#142728 gui=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent2 guibg=#402D09 gui=nocombine]]
 vim.cmd [[highlight IndentBlanklineIndent3 guibg=#3d0a08 gui=nocombine]]
 vim.cmd [[highlight IndentBlanklineIndent4 guibg=#2d2d07 gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent2 guibg=#402D09 gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent1 guibg=#142728 gui=nocombine]]
 
 require("indent_blankline").setup {
   char = "",
@@ -89,7 +87,7 @@ require("indent_blankline").setup {
 keymap.set('n', '<Leader>m', ':HopWord<CR>')
 keymap.set('n', '<Leader>,', ':HopChar1<CR>')
 
---tagbar
+-- tagbar
 require('bufferline').setup {}
 
 -- filer
