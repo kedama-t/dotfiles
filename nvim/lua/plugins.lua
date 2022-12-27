@@ -42,7 +42,7 @@ return require('packer').startup(
       config = function() require('aerial').setup() end
     }
     -- indent
-          use "lukas-reineke/indent-blankline.nvim"
+    use "lukas-reineke/indent-blankline.nvim"
 
     -- fuzzy finder
     use { 'junegunn/fzf', run = './install --bin', }
@@ -53,6 +53,16 @@ return require('packer').startup(
 
     -- treesitter
     use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
+    use { 'nvim-treesitter/nvim-treesitter-textobjects' }
+
+    use({
+      "kylechui/nvim-surround",
+      tag = "*", -- Use for stability; omit to use `main` branch for the latest features
+      config = function()
+        require("nvim-surround").setup({
+        })
+      end
+    })
 
     -- appearance
     use 'sainnhe/gruvbox-material'
@@ -74,8 +84,6 @@ return require('packer').startup(
 
     -- utils
     use 'ap/vim-css-color'
-    use 'machakann/vim-sandwich'
-    use 'alvan/vim-closetag'
 
     -- comment
     use {
