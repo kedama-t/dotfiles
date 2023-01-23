@@ -19,12 +19,14 @@ opt.smartcase = true
 vim.cmd("set signcolumn=yes")
 vim.cmd("set mouse=")
 -- color scheme
-vim.cmd("colorscheme gruvbox-material")
+-- vim.cmd("colorscheme gruvbox-material")
+vim.cmd("colorscheme onedark")
 
 -- lualine
 require("lualine").setup {
     options = {
-        theme = "gruvbox"
+        -- theme = "gruvbox"
+        theme = "onedark"
     }
 }
 

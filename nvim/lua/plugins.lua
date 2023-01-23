@@ -21,13 +21,32 @@ require("jetpack.packer").add {
         -- treesitter
     {"nvim-treesitter/nvim-treesitter", run = ":TSUpdate"},
     -- appearance
+    "joshdick/onedark.vim",
     "sainnhe/gruvbox-material",
     -- status bar
     {
         "nvim-lualine/lualine.nvim",
     },
     -- tagbar
-    {"akinsho/bufferline.nvim", tag = "v2.*", requires = "kyazdani42/nvim-web-devicons"},
+    "akinsho/bufferline.nvim",
+    -- scroll bar
+    {"petertriho/nvim-scrollbar",config = function()
+      require("scrollbar").setup()
+    end
+    },
+    {"lewis6991/gitsigns.nvim",config = function()
+      require("gitsigns").setup()
+      require("scrollbar.handlers.gitsigns").setup()
+    end
+    },
+    {"kevinhwang91/nvim-hlslens",config = function()
+      require("hlslens").setup({
+        build_position_cb = function(plist, _, _, _)
+          require("scrollbar.handlers.search").handler.show(plist.start_pos)
+        end
+      })
+    end
+    },
     -- filer
     {
         "kyazdani42/nvim-tree.lua",
@@ -44,7 +63,7 @@ require("jetpack.packer").add {
             require("Comment").setup()
         end
     },
-        -- code formatter
+    -- code formatter
     {"prettier/vim-prettier", run = {"yarn install --frozen-lockfile --production"}},
     -- jump
     {
@@ -57,7 +76,4 @@ require("jetpack.packer").add {
     },
     -- Git
     "tpope/vim-fugitive",
-    -- diagnostics
-    {"folke/trouble.nvim",config=function() require("trouble").setup() end}
-
   }
