@@ -36,6 +36,14 @@ if vim.fn.has("win32") == 1 then
 end
 
 vim.g.mapleader = " "
+keymap.set("n", "<A-[>", ":nohl<CR>")
+keymap.set("i", "<C-s>", "<ESC>:w<CR>")
+keymap.set("i", "<A-[>", "<ESC>")
+keymap.set("i", "<A-x>", "<del>")
+keymap.set("i", "<C-h>", "<left>")
+keymap.set("i", "<C-j>", "<down>")
+keymap.set("i", "<C-k>", "<up>")
+keymap.set("i", "<C-l>", "<right>")
 keymap.set("n", "<Leader>b", ":bprev<CR>")
 keymap.set("n", "<Leader>n", ":bnext<CR>")
 keymap.set("n", "<Leader>f", "<cmd>lua require('fzf-lua').files()<CR>")
