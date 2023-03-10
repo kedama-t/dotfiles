@@ -23,6 +23,8 @@ require("jetpack.packer").add {
     -- appearance
     "joshdick/onedark.vim",
     "sainnhe/gruvbox-material",
+    "sainnhe/sonokai",
+    "jacoborus/tender.vim",
     -- status bar
     {
         "nvim-lualine/lualine.nvim",
