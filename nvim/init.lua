@@ -11,6 +11,7 @@ opt.expandtab = true
 opt.tabstop = 2
 opt.shiftwidth = 2
 opt.pumblend = 10
+opt.winblend = 10
 opt.fileencodings = {"utf-8", "utf-16", "euc-jp", "sjis"}
 opt.fileformats = {"unix", "dos", "mac"}
 opt.ignorecase = true
@@ -20,13 +21,17 @@ vim.cmd("set signcolumn=yes")
 vim.cmd("set mouse=")
 -- color scheme
 -- vim.cmd("colorscheme gruvbox-material")
-vim.cmd("colorscheme onedark")
+-- vim.cmd("colorscheme onedark")
+vim.cmd("let g:sonokai_style = 'shusia'")
+vim.cmd("let g:sonokai_better_performance = 1")
+vim.cmd("colorscheme sonokai")
 
 -- lualine
 require("lualine").setup {
     options = {
         -- theme = "gruvbox"
-        theme = "onedark"
+        -- theme = "onedark"
+        theme = "sonokai"
     }
 }
 
@@ -46,14 +51,36 @@ keymap.set("i", "<C-k>", "<up>")
 keymap.set("i", "<C-l>", "<right>")
 keymap.set("n", "<Leader>b", ":bprev<CR>")
 keymap.set("n", "<Leader>n", ":bnext<CR>")
-keymap.set("n", "<Leader>f", "<cmd>lua require('fzf-lua').files()<CR>")
-keymap.set("n", "<Leader>gf", "<cmd>lua require('fzf-lua').git_files()<CR>")
-keymap.set("n", "<Leader>grep", "<cmd>lua require('fzf-lua').live_grep()<CR>")
 keymap.set("n", "<Leader>pref", ":e $MYVIMRC<CR>")
 keymap.set("n", "<Leader>plug", ":e ~/.config/nvim/lua/plugins.lua<CR>")
 keymap.set("n", "<Leader>coc", ":e ~/.config/nvim/lua/coc.lua<CR>")
+keymap.set("n", "<Leader>cocs", ":e ~/.config/nvim/coc-settings.json<CR>")
 keymap.set("n", "<Leader>sjis", ":e ++encoding=sjis<CR>:w")
 keymap.set("t", "<Esc>", "<C-\\><C-n>")
+
+-- finder
+require('telescope').setup{
+  defaults = {
+    mappings = {
+      i = {
+        ["<Esc>"] = require('telescope.actions').close
+      }
+    },
+    prompt_prefix = "🔍 ",
+  }
+}
+
+local builtin = require("telescope.builtin")
+local opts = {silent = true, nowait = true}
+keymap.set("n", "<Leader>f", builtin.find_files, opts)
+keymap.set("n", "<Leader>g", builtin.git_files, opts)
+keymap.set("n", "<Leader>fb", builtin.current_buffer_fuzzy_find, opts)
+keymap.set("n", "<Leader>fc", builtin.commands, opts)
+keymap.set("n", "<Leader>grep", builtin.live_grep, opts)
+keymap.set("n", "<Leader>e", ":Telescope coc diagnostics<CR>", opts)
+keymap.set("n", "<Leader>d", ":Telescope coc definitions<CR>", opts)
+keymap.set("n", "<Leader>y", ":Telescope coc type_definitions<CR>", opts)
+keymap.set("n", "<Leader>r", ":Telescope coc references<CR>", opts)
 
 -- treesitter
 require("nvim-treesitter.configs").setup {
@@ -70,24 +97,18 @@ require("nvim-treesitter.configs").setup {
 }
 
 -- indent
-vim.cmd [[highlight IndentBlanklineIndent1 guibg=#142728 gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent2 guibg=#402D09 gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent3 guibg=#3d0a08 gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent4 guibg=#2d2d07 gui=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent1 guibg=#2d2a2e gui=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent2 guibg=#453B44 gui=nocombine]]
 
 require("indent_blankline").setup {
     char = "",
     char_highlight_list = {
         "IndentBlanklineIndent1",
         "IndentBlanklineIndent2",
-        "IndentBlanklineIndent3",
-        "IndentBlanklineIndent4"
     },
     space_char_highlight_list = {
         "IndentBlanklineIndent1",
         "IndentBlanklineIndent2",
-        "IndentBlanklineIndent3",
-        "IndentBlanklineIndent4"
     },
     show_trailing_blankline_indent = false
 }
@@ -117,6 +138,3 @@ require("nvim-tree").setup {
 }
 keymap.set("n", "<Leader>t", ":NvimTreeToggle<CR>")
 api.nvim_tree_quit_on_open = 1
-
-
-

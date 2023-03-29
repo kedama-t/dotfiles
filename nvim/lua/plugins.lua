@@ -1,28 +1,28 @@
 vim.cmd("packadd vim-jetpack")
 require("jetpack.packer").add {
     {"tani/vim-jetpack", opt = 1},
-    -- outline
-    {
-        "stevearc/aerial.nvim",
-        config = function()
-            require("aerial").setup()
-        end
-    },
+    -- lsp
+    {"neoclide/coc.nvim", branch = "release"},
     -- devicons
     "kyazdani42/nvim-web-devicons",
     -- indent
     "lukas-reineke/indent-blankline.nvim",
     -- finder
-    "junegunn/fzf.vim",
-    {"junegunn/fzf", run = "call fzf#install()"},
-    "ibhagwan/fzf-lua",
-    -- lsp
-    {"neoclide/coc.nvim", branch = "release"},
-        -- treesitter
+    "nvim-lua/plenary.nvim",
+    {
+      "nvim-telescope/telescope.nvim", tag = "0.1.1"
+    },
+    "fannheyward/telescope-coc.nvim",
+    -- "junegunn/fzf.vim",
+    -- {"junegunn/fzf", run = "call fzf#install()"},
+    -- "ibhagwan/fzf-lua",
+    -- treesitter
     {"nvim-treesitter/nvim-treesitter", run = ":TSUpdate"},
     -- appearance
     "joshdick/onedark.vim",
     "sainnhe/gruvbox-material",
+    "sainnhe/sonokai",
+    "jacoborus/tender.vim",
     -- status bar
     {
         "nvim-lualine/lualine.nvim",
