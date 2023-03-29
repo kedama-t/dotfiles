@@ -22,8 +22,11 @@ vim.cmd("set mouse=")
 -- color scheme
 -- vim.cmd("colorscheme gruvbox-material")
 -- vim.cmd("colorscheme onedark")
+<<<<<<< HEAD
 vim.cmd("let g:sonokai_style = 'shusia'")
 vim.cmd("let g:sonokai_better_performance = 1")
+=======
+>>>>>>> 254733ddc71f402703c7ed69ca610a353799a849
 vim.cmd("colorscheme sonokai")
 
 -- lualine
@@ -97,8 +100,13 @@ require("nvim-treesitter.configs").setup {
 }
 
 -- indent
+<<<<<<< HEAD
 vim.cmd [[highlight IndentBlanklineIndent1 guibg=#2d2a2e gui=nocombine]]
 vim.cmd [[highlight IndentBlanklineIndent2 guibg=#453B44 gui=nocombine]]
+=======
+vim.cmd [[highlight IndentBlanklineIndent1 guibg=#2c2e34 gui=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent2 guibg=#4c4f5a gui=nocombine]]
+>>>>>>> 254733ddc71f402703c7ed69ca610a353799a849
 
 require("indent_blankline").setup {
     char = "",
