@@ -5,35 +5,42 @@ local keymap = vim.keymap
 local api = vim.api
 
 -- option
-opt.termguicolors = true
-opt.number = true
-opt.expandtab = true
-opt.tabstop = 2
-opt.shiftwidth = 2
-opt.pumblend = 10
-opt.winblend = 10
-opt.fileencodings = {"utf-8", "utf-16", "euc-jp", "sjis"}
-opt.fileformats = {"unix", "dos", "mac"}
-opt.ignorecase = true
-opt.smartcase = true
+if not vim.g.vscode then
+	opt.termguicolors = true
+	opt.number = true
+	opt.expandtab = true
+	opt.tabstop = 2
+	opt.shiftwidth = 2
+	opt.pumblend = 10
+	opt.winblend = 10
+	opt.fileencodings = {"utf-8", "utf-16", "euc-jp", "sjis"}
+	opt.fileformats = {"unix", "dos", "mac"}
+	opt.ignorecase = true
+	opt.smartcase = true
 
-vim.cmd("set signcolumn=yes")
-vim.cmd("set mouse=")
--- color scheme
--- vim.cmd("colorscheme gruvbox-material")
--- vim.cmd("colorscheme onedark")
-vim.cmd("let g:sonokai_style = 'shusia'")
-vim.cmd("let g:sonokai_better_performance = 1")
-vim.cmd("colorscheme sonokai")
+	vim.cmd("set signcolumn=yes")
+	vim.cmd("set mouse=")
+	-- color scheme
+	-- vim.cmd("colorscheme gruvbox-material")
+	-- vim.cmd("colorscheme onedark")
+	vim.cmd("let g:sonokai_style = 'shusia'")
+	vim.cmd("let g:sonokai_better_performance = 1")
+	vim.cmd("colorscheme sonokai")
 
--- lualine
-require("lualine").setup {
-    options = {
-        -- theme = "gruvbox"
-        -- theme = "onedark"
-        theme = "sonokai"
-    }
-}
+	-- lualine
+	require("lualine").setup {
+	    options = {
+	        -- theme = "gruvbox"
+	        -- theme = "onedark"
+	        theme = "sonokai"
+	    }
+	}
+	
+	-- tagbar
+	require("bufferline").setup{}
+	-- scroll bar
+    require("scrollbar").setup{}
+end
 
 -- key remap
 if vim.fn.has("win32") == 1 then
@@ -72,11 +79,11 @@ require('telescope').setup{
 
 local builtin = require("telescope.builtin")
 local opts = {silent = true, nowait = true}
-keymap.set("n", "<Leader>f", builtin.find_files, opts)
-keymap.set("n", "<Leader>g", builtin.git_files, opts)
+keymap.set("n", "<Leader>ff", builtin.find_files, opts)
+keymap.set("n", "<Leader>gf", builtin.git_files, opts)
 keymap.set("n", "<Leader>fb", builtin.current_buffer_fuzzy_find, opts)
 keymap.set("n", "<Leader>fc", builtin.commands, opts)
-keymap.set("n", "<Leader>grep", builtin.live_grep, opts)
+keymap.set("n", "<Leader>gr", builtin.live_grep, opts)
 keymap.set("n", "<Leader>e", ":Telescope coc diagnostics<CR>", opts)
 keymap.set("n", "<Leader>d", ":Telescope coc definitions<CR>", opts)
 keymap.set("n", "<Leader>y", ":Telescope coc type_definitions<CR>", opts)
@@ -117,9 +124,6 @@ require("indent_blankline").setup {
 keymap.set("n", "<Leader>m", ":HopWord<CR>")
 keymap.set("n", "<Leader>,", ":HopChar1<CR>")
 
--- tagbar
-require("bufferline").setup {}
-
 -- filer
 require("nvim-tree").setup {
     open_on_tab = false,
@@ -136,5 +140,6 @@ require("nvim-tree").setup {
         }
     }
 }
+
 keymap.set("n", "<Leader>t", ":NvimTreeToggle<CR>")
 api.nvim_tree_quit_on_open = 1

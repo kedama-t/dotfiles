@@ -1,4 +1,8 @@
 {
+  "diagnostic.errorSign": "??",
+  "diagnostic.warningSign": "?!",
+  "diagnostic.infoSign": "!?",
+  "diagnostic.hintSign": "!!",
   "coc.preferences.formatOnSaveFiletypes": [
     "css",
     "html",
@@ -6,5 +10,15 @@
     "typescript",
     "javascript",
     "json"
+  ],
+  "Lua.diagnostics.globals": ["vim"],
+  "cSpell.words": [
+    "phr",
+    "firestore",
+    "firebase",
+    "dptipv",
+    "userdata",
+    "uuidv",
+    "consts"
   ]
 }
