@@ -23,16 +23,18 @@ if not vim.g.vscode then
 	-- color scheme
 	-- vim.cmd("colorscheme gruvbox-material")
 	-- vim.cmd("colorscheme onedark")
-	vim.cmd("let g:sonokai_style = 'shusia'")
-	vim.cmd("let g:sonokai_better_performance = 1")
-	vim.cmd("colorscheme sonokai")
+	-- vim.cmd("let g:sonokai_style = 'shusia'")
+	-- vim.cmd("let g:sonokai_better_performance = 1")
+  -- vim.cmd("colorscheme sonokai")
+  vim.cmd("colorscheme tender")
 
 	-- lualine
 	require("lualine").setup {
 	    options = {
 	        -- theme = "gruvbox"
 	        -- theme = "onedark"
-	        theme = "sonokai"
+	        -- theme = "sonokai"
+	        theme = "auto"
 	    }
 	}
 	
@@ -104,24 +106,25 @@ require("nvim-treesitter.configs").setup {
 }
 
 -- indent
-vim.cmd [[highlight IndentBlanklineIndent1 guibg=#2d2a2e gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent2 guibg=#453B44 gui=nocombine]]
+local highlight = {
+    "CursorColumn",
+    "Whitespace",
+  }
 
-require("indent_blankline").setup {
-    char = "",
-    char_highlight_list = {
-        "IndentBlanklineIndent1",
-        "IndentBlanklineIndent2",
+require("ibl").setup {
+    indent = { highlight = highlight, char = "" },
+    whitespace = {
+
+        highlight = highlight,
+
+        remove_blankline_trail = false,
+
     },
-    space_char_highlight_list = {
-        "IndentBlanklineIndent1",
-        "IndentBlanklineIndent2",
-    },
-    show_trailing_blankline_indent = false
-}
+    scope = { enabled = false },
+  }
 
 -- label jump
-keymap.set("n", "<Leader>m", ":HopWord<CR>")
+keymap.set("n", "<Leader><Leader>", ":HopWord<CR>")
 keymap.set("n", "<Leader>,", ":HopChar1<CR>")
 
 -- filer
