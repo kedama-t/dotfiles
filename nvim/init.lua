@@ -1,148 +1,58 @@
-require "plugins"
-require "coc"
 local opt = vim.opt
 local keymap = vim.keymap
 local api = vim.api
+vim.g.mapleader = ' '
+
+-- lazy.nvim bootstrap
+local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    'git',
+    'clone',
+    '--filter=blob:none',
+    'https://github.com/folke/lazy.nvim.git',
+    '--branch=stable', -- latest stable release
+    lazypath,
+  })
+end
+opt.rtp:prepend(lazypath)
+
+local plugins = require('plugins')
+
+require('lazy').setup(plugins)
+--
 
 -- option
 if not vim.g.vscode then
-	opt.termguicolors = true
-	opt.number = true
-	opt.expandtab = true
-	opt.tabstop = 2
-	opt.shiftwidth = 2
-	opt.pumblend = 10
-	opt.winblend = 10
-	opt.fileencodings = {"utf-8", "utf-16", "euc-jp", "sjis"}
-	opt.fileformats = {"unix", "dos", "mac"}
-	opt.ignorecase = true
-	opt.smartcase = true
+  opt.termguicolors = true
+  opt.number = true
+  opt.expandtab = true
+  opt.tabstop = 2
+  opt.shiftwidth = 2
+  opt.pumblend = 10
+  opt.winblend = 10
+  opt.fileencodings = { 'utf-8', 'utf-16', 'euc-jp', 'sjis' }
+  opt.fileformats = { 'unix', 'dos', 'mac' }
+  opt.ignorecase = true
+  opt.smartcase = true
 
-	vim.cmd("set signcolumn=yes")
-	vim.cmd("set mouse=")
-	-- color scheme
-	-- vim.cmd("colorscheme gruvbox-material")
-	-- vim.cmd("colorscheme onedark")
-	-- vim.cmd("let g:sonokai_style = 'shusia'")
-	-- vim.cmd("let g:sonokai_better_performance = 1")
-  -- vim.cmd("colorscheme sonokai")
-  vim.cmd("colorscheme tender")
-
-	-- lualine
-	require("lualine").setup {
-	    options = {
-	        -- theme = "gruvbox"
-	        -- theme = "onedark"
-	        -- theme = "sonokai"
-	        theme = "auto"
-	    }
-	}
-	
-	-- tagbar
-	require("bufferline").setup{}
-	-- scroll bar
-    require("scrollbar").setup{}
+  vim.cmd('set signcolumn=yes')
+  vim.cmd('set mouse=')
 end
 
--- key remap
-if vim.fn.has("win32") == 1 then
-    keymap.set("n", "<C-z>", "u", {remap = true})
-end
-
-vim.g.mapleader = " "
-keymap.set("n", "<A-[>", ":nohl<CR>")
-keymap.set("i", "<C-s>", "<ESC>:w<CR>")
-keymap.set("i", "<A-[>", "<ESC>")
-keymap.set("i", "<A-x>", "<del>")
-keymap.set("i", "<C-h>", "<left>")
-keymap.set("i", "<C-j>", "<down>")
-keymap.set("i", "<C-k>", "<up>")
-keymap.set("i", "<C-l>", "<right>")
-keymap.set("n", "<Leader>b", ":bprev<CR>")
-keymap.set("n", "<Leader>n", ":bnext<CR>")
-keymap.set("n", "<Leader>pref", ":e $MYVIMRC<CR>")
-keymap.set("n", "<Leader>plug", ":e ~/.config/nvim/lua/plugins.lua<CR>")
-keymap.set("n", "<Leader>coc", ":e ~/.config/nvim/lua/coc.lua<CR>")
-keymap.set("n", "<Leader>cocs", ":e ~/.config/nvim/coc-settings.json<CR>")
-keymap.set("n", "<Leader>sjis", ":e ++encoding=sjis<CR>:w")
-keymap.set("t", "<Esc>", "<C-\\><C-n>")
-
--- finder
-require('telescope').setup{
-  defaults = {
-    mappings = {
-      i = {
-        ["<Esc>"] = require('telescope.actions').close
-      }
-    },
-    prompt_prefix = "🔍 ",
-  }
-}
-
-local builtin = require("telescope.builtin")
-local opts = {silent = true, nowait = true}
-keymap.set("n", "<Leader>ff", builtin.find_files, opts)
-keymap.set("n", "<Leader>gf", builtin.git_files, opts)
-keymap.set("n", "<Leader>fb", builtin.current_buffer_fuzzy_find, opts)
-keymap.set("n", "<Leader>fc", builtin.commands, opts)
-keymap.set("n", "<Leader>gr", builtin.live_grep, opts)
-keymap.set("n", "<Leader>e", ":Telescope coc diagnostics<CR>", opts)
-keymap.set("n", "<Leader>d", ":Telescope coc definitions<CR>", opts)
-keymap.set("n", "<Leader>y", ":Telescope coc type_definitions<CR>", opts)
-keymap.set("n", "<Leader>r", ":Telescope coc references<CR>", opts)
-
--- treesitter
-require("nvim-treesitter.configs").setup {
-    ensure_installed = {
-        "lua",
-        "javascript",
-        "typescript",
-        "tsx",
-        "dart"
-    },
-    highlight = {
-        enable = true
-    }
-}
-
--- indent
-local highlight = {
-    "CursorColumn",
-    "Whitespace",
-  }
-
-require("ibl").setup {
-    indent = { highlight = highlight, char = "" },
-    whitespace = {
-
-        highlight = highlight,
-
-        remove_blankline_trail = false,
-
-    },
-    scope = { enabled = false },
-  }
-
--- label jump
-keymap.set("n", "<Leader><Leader>", ":HopWord<CR>")
-keymap.set("n", "<Leader>,", ":HopChar1<CR>")
-
--- filer
-require("nvim-tree").setup {
-    open_on_tab = false,
-    view = {
-        width = 50,
-        side = "left",
-        preserve_window_proportions = false,
-        number = false,
-        relativenumber = false,
-        signcolumn = "yes",
-        mappings = {
-            custom_only = false,
-            list = {}
-        }
-    }
-}
-
-keymap.set("n", "<Leader>t", ":NvimTreeToggle<CR>")
-api.nvim_tree_quit_on_open = 1
+-- keymap
+keymap.set('n', ';', ':')
+keymap.set('n', '<A-[>', ':nohl<CR>')
+keymap.set('i', '<C-s>', '<ESC>:w<CR>')
+keymap.set('i', '<A-[>', '<ESC>')
+keymap.set('i', '<A-x>', '<del>')
+keymap.set('i', '<C-h>', '<left>')
+keymap.set('i', '<C-j>', '<down>')
+keymap.set('i', '<C-k>', '<up>')
+keymap.set('i', '<C-l>', '<right>')
+keymap.set('n', '<Leader>b', ':bprev<CR>')
+keymap.set('n', '<Leader>n', ':bnext<CR>')
+keymap.set('n', '<Leader>pref', ':e $MYVIMRC<CR>')
+keymap.set('n', '<Leader>plug', ':e ~/.config/nvim/lua/plugins.lua<CR>')
+keymap.set('n', '<Leader>sjis', ':e ++encoding=sjis<CR>:w')
+keymap.set('t', '<Esc>', '<C-\\><C-n>')
