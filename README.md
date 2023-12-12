@@ -34,10 +34,14 @@
 - `ga` - `vim.lsp.buf.code_action`
 - `K` - `vim.lsp.buf.hover`
 - `<C-k>` - `vim.lsp.buf.signature_help`
-- `<Leader>p` - `vim.lsp.buf.format`
+- `<C-f>` - `vim.lsp.buf.format`
 - `ge` - `vim.diagnostic.open_float`
 - `g[` - `vim.diagnostic.goto_next`
 - `g]` - `vim.diagnostic.goto_prev`
+
+#### Prettier
+
+- `<C-p>` - code format with Prettier
 
 ### INSERT
 
@@ -53,4 +57,4 @@
 - `<ESC>` - `<C-\><C-n>`
 
 ## Keyboard
-- [Choco60 rev.2](https://keys.recompile.net/projects/choco60-rev2/)
+- Keymap for [Choco60 rev.2](https://keys.recompile.net/projects/choco60-rev2/)
