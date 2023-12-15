@@ -37,6 +37,14 @@ return {
     end,
   },
 
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    main = "ibl",
+    config = function()
+      require("ibl").setup()
+    end
+  },
+
   -- motion
   {
     'smoka7/hop.nvim',
@@ -63,7 +71,7 @@ return {
       local builtin = require('telescope.builtin')
       keymap.set('n', '<Leader>ff', builtin.find_files, {})
       keymap.set('n', '<Leader>fg', builtin.git_files, {})
-      keymap.set('n', '<Leader>gr', builtin.live_grep, {})
+      keymap.set('n', '<Leader>fr', builtin.live_grep, {})
       keymap.set('n', '<Leader>fb', builtin.buffers, {})
       keymap.set('n', '<Leader>fh', builtin.help_tags, {})
       keymap.set('n', '<Leader>e', builtin.diagnostics, {})
@@ -157,7 +165,7 @@ return {
           keymap.set('n', 'ga', lsp.buf.code_action, bufopts)
           keymap.set('n', 'K', lsp.buf.hover, bufopts)
           keymap.set('n', '<C-k>', lsp.buf.signature_help, bufopts)
-          keymap.set('n', '<C-f>', lsp.buf.format, bufopts)
+          keymap.set('n', 'gf', lsp.buf.format, bufopts)
           keymap.set('n', 'ge', vim.diagnostic.open_float, bufopts)
           keymap.set('n', 'g[', vim.diagnostic.goto_next, bufopts)
           keymap.set('n', 'g]', vim.diagnostic.goto_prev, bufopts)
