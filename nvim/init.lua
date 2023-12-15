@@ -44,9 +44,8 @@ if vim.fn.has('win32') == 1 then
   keymap.set('n', '<C-z>', 'u', { remap = true })
 end
 
--- for english keybard
+keymap.set('n', '<Leader><Leader>', ':!')
 keymap.set('n', ';', ':')
-
 keymap.set('n', '<A-[>', ':nohl<CR>')
 keymap.set('i', '<C-s>', '<ESC>:w<CR>')
 keymap.set('i', '<A-[>', '<ESC>')
