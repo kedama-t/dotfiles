@@ -37,11 +37,23 @@ return {
     end,
   },
 
+  -- indent
   {
     "lukas-reineke/indent-blankline.nvim",
     main = "ibl",
     config = function()
-      require("ibl").setup()
+      local highlight = {
+        "CursorColumn",
+        "Whitespace",
+      }
+      require("ibl").setup {
+        indent = { highlight = highlight, char = "" },
+        whitespace = {
+          highlight = highlight,
+          remove_blankline_trail = false,
+        },
+        scope = { enabled = false },
+      }
     end
   },
 
@@ -185,66 +197,21 @@ return {
     end,
   },
 
-  -- prettier
+  -- none-ls
   {
-    'MunifTanjim/prettier.nvim',
-    dependencies = {
-      'neovim/nvim-lspconfig',
-      'nvimtools/none-ls.nvim',
-    },
+    'nvimtools/none-ls.nvim',
     config = function()
-      local prettier = require('prettier')
-
-      prettier.setup({
-        bin = 'prettier',
-        filetypes = {
-          'css',
-          'graphql',
-          'html',
-          'javascript',
-          'javascriptreact',
-          'json',
-          'less',
-          'markdown',
-          'scss',
-          'typescript',
-          'typescriptreact',
-          'yaml',
-        },
-      })
-
       local null_ls = require('null-ls')
 
-      local group = api.nvim_create_augroup('lsp_format_on_save',
-        { clear = false })
-      local event = 'BufWritePre'
-      local async = event == 'BufWritePost'
-
       null_ls.setup({
-        on_attach = function(client, bufnr)
-          if client.supports_method('textDocument/formatting') then
-            keymap.set('n', '<C-p>', function()
-              lsp.buf.format({ bufnr = api.nvim_get_current_buf() })
-            end, { buffer = bufnr, desc = '[lsp] format' })
-
-            -- format on save
-            api.nvim_clear_autocmds({ buffer = bufnr, group = group })
-            api.nvim_create_autocmd(event, {
-              buffer = bufnr,
-              group = group,
-              callback = function()
-                lsp.buf.format({ bufnr = bufnr, async = async })
-              end,
-              desc = '[lsp] format on save',
-            })
-          end
-
-          if client.supports_method('textDocument/rangeFormatting') then
-            keymap.set('x', '<C-p>', function()
-              lsp.buf.format({ bufnr = api.nvim_get_current_buf() })
-            end, { buffer = bufnr, desc = '[lsp] format' })
-          end
-        end,
+        sources = {
+          null_ls.builtins.formatting.prettier.with({
+            condition = function(utils)
+              return utils.has_file { ".prettierrc", ".prettierrc.js" }
+            end,
+            prefer_local = "node_modules/.bin"
+          })
+        }
       })
     end,
   },
