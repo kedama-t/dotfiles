@@ -15,7 +15,7 @@
 #### telescope.nvim
 - `<Leader>ff` - `builtin.find_files`
 - `<Leader>fg` - `builtin.git_files`
-- `<Leader>gr` - `builtin.live_grep`
+- `<Leader>fr` - `builtin.live_grep`
 - `<Leader>fb` - `builtin.buffers`
 - `<Leader>fh` - `builtin.help_tags`
 - `<Leader>e` - `builtin.diagnostics`
@@ -34,7 +34,7 @@
 - `ga` - `vim.lsp.buf.code_action`
 - `K` - `vim.lsp.buf.hover`
 - `<C-k>` - `vim.lsp.buf.signature_help`
-- `<C-f>` - `vim.lsp.buf.format`
+- `gf` - `vim.lsp.buf.format`
 - `ge` - `vim.diagnostic.open_float`
 - `g[` - `vim.diagnostic.goto_next`
 - `g]` - `vim.diagnostic.goto_prev`
