@@ -5,34 +5,45 @@ export LANG=ja_JP.UTF-8
 
 export GIT_PS1_SHOWDIRTYSTATE=1
 export GIT_PS1_SHOWUNTRACKEDFILES=1
-export GIT_PS1_SHOWCOLORHINTS=1
+export GIT_PS1_SHOWCOLORHINTS=17
 
 function setPrompt(){
+    if [ "$(uname)" == 'Darwin' ]; then
+        _os=$(echo -e "\uf302")
+    elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+        _os=$(echo -e "\uf31a")
+    elif [ "$(expr substr $(uname -s) 1 10)" == 'MINGW64_NT' ]; then                                                                                           
+        _os=$(echo -e "\ue62a")
+    else
+        echo "Your platform ($(uname -a)) is not supported."
+        exit 0
+    fi
+
     # define decorations
-    _reset=$(tput sgr0)
-    _fgBlack=$(tput setaf 0) #\e[30m
-    _bgBlack=$(tput setab 0) #\e[40m
-    _fgRed=$(tput setaf 1) #\e[31m
-    _bgRed=$(tput setab 1) #\e[41m
-    _fgGreen=$(tput setaf 2) #\e[32m
-    _bgGreen=$(tput setab 2) #\e[42m
-    _fgYellow=$(tput setaf 3) #\e[33m
-    _bgYellow=$(tput setab 3) #\e[43m
-    _fgBlue=$(tput setaf 4) #\e[34m
-    _bgBlue=$(tput setab 4) #\e[44m
-    _fgMagenta=$(tput setaf 5) #\e[35m
-    _bgMagenta=$(tput setab 5) #\e[45m
-    _fgCyan=$(tput setaf 6) #\e[36m
-    _bgCyan=$(tput setab 6) #\e[46m
-    _fgWhite=$(tput setaf 7) #\e[37m
-    _bgWhite=$(tput setab 7) #\e[47m
-    _bold=$(tput bold)
-    _italic=$(tput sitm)
-    _dim=$(tput dim)
+    _reset="\\["$(tput sgr0)"\\]"
+    _fgBlack="\\["$(tput setaf 0)"\\]" #\e[30m
+    _bgBlack="\\["$(tput setab 0)"\\]" #\e[40m
+    _fgRed="\\["$(tput setaf 1)"\\]" #\e[31m
+    _bgRed="\\["$(tput setab 1)"\\]" #\e[41m
+    _fgGreen="\\["$(tput setaf 2)"\\]" #\e[32m
+    _bgGreen="\\["$(tput setab 2)"\\]" #\e[42m
+    _fgYellow="\\["$(tput setaf 3)"\\]" #\e[33m
+    _bgYellow="\\["$(tput setab 3)"\\]" #\e[43m
+    _fgBlue="\\["$(tput setaf 4)"\\]" #\e[34m
+    _bgBlue="\\["$(tput setab 4)"\\]" #\e[44m
+    _fgMagenta="\\["$(tput setaf 5)"\\]" #\e[35m
+    _bgMagenta="\\["$(tput setab 5)"\\]" #\e[45m
+    _fgCyan="\\["$(tput setaf 6)"\\]" #\e[36m
+    _bgCyan="\\["$(tput setab 6)"\\]" #\e[46m
+    _fgWhite="\\["$(tput setaf 7)"\\]" #\e[37m
+    _bgWhite="\\["$(tput setab 7)"\\]" #\e[47m
+    _bold="\\["$(tput bold)"\\]"
+    _italic="\\["$(tput sitm)"\\]"
+    _dim="\\["$(tput dim)"\\]"
     _newLine=$'\n'
     
     PS1=$_fgBlack$_bgBlue$(echo -e "\ue0b0")$_reset
-    PS1+=$_fgGreen$_bgBlue'[\t]'$_reset
+    PS1+=$_fgGreen$_bgBlue' '$_os' '$_reset
     PS1+=$_fgBlue$_bgGreen$(echo -e "\ue0b0")$_reset
     PS1+=$_fgBlue$_bgGreen' \w '$_reset
     PS1+=$_fgGreen$(echo -e "\ue0b0")$_reset
