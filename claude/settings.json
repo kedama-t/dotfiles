@@ -1,0 +1,48 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Edit",
+      "MultiEdit",
+      "Glob",
+      "Grep",
+      "View",
+      "Bash(git:*)",
+      "Bash(npm:*)",
+      "Bash(yarn:*)",
+      "Bash(pnpm:*)",
+      "Bash(bun:*)",
+      "Bash(docker ps)",
+      "Bash(docker logs:*)",
+      "Bash(kubectl get:*)",
+      "Bash(helm list)",
+      "WebSearch",
+      "WebFetch"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(sudo:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(dd:*)",
+      "Bash(chmod 777:*)",
+      "Bash(mkfs:*)",
+      "Bash(format:*)",
+      "Bash(fdisk:*)",
+      "Bash(reboot)",
+      "Bash(shutdown:*)",
+      "Bash(systemctl stop:*)",
+      "Bash(systemctl disable:*)",
+      "Bash(iptables:*)",
+      "Bash(ufw disable)",
+      "Bash(firewall-cmd:*)",
+      "Bash(passwd:*)",
+      "Bash(userdel:*)",
+      "Bash(groupdel:*)",
+      "Bash(crontab -r)",
+      "Bash(pkill -9:*)",
+      "Bash(killall:*)"
+    ]
+  },
+  "model": "claude-sonnet-4"
+}
