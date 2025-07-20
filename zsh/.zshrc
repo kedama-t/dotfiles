@@ -36,8 +36,3 @@ if command -v go >/dev/null 2>&1; then
     export GOPATH="$HOME/go"
     export PATH="$PATH:$GOPATH/bin"
 fi
-
-# Claude Code completion (if available)
-if command -v claude-code >/dev/null 2>&1; then
-    eval "$(claude-code completion zsh)"
-fi
