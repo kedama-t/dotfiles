@@ -107,116 +107,24 @@ return {
 
   -- LSP
   {
-    'neovim/nvim-lspconfig',
-    dependencies = {
-      'williamboman/mason.nvim',
-      'hrsh7th/nvim-cmp',
-      'hrsh7th/cmp-nvim-lsp',
-      'hrsh7th/cmp-buffer',
-      'hrsh7th/cmp-path',
-      'hrsh7th/cmp-cmdline',
-      'williamboman/mason-lspconfig.nvim',
-    },
-    config = function()
-      require('mason').setup()
-      local nvim_lsp = require('lspconfig')
-      local mason_lspconfig = require('mason-lspconfig')
-
-      -- nvim-cmp settings
-      local cmp = require('cmp')
-      cmp.setup({
-        mapping = cmp.mapping.preset.insert({
-          ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-          ['<C-f>'] = cmp.mapping.scroll_docs(4),
-          ['<C-Space>'] = cmp.mapping.complete(),
-          ['<C-e>'] = cmp.mapping.abort(),
-          ['<CR>'] = cmp.mapping.confirm({ select = false }),
-          ['<Tab>'] = cmp.mapping.confirm({ select = true }),
-        }),
-        sources = cmp.config.sources({
-          { name = 'nvim_lsp' },
-        }, {
-          { name = 'buffer' },
-        }),
-      })
-      -- Set configuration for specific filetype.
-      cmp.setup.filetype('gitcommit', {
-        sources = cmp.config.sources({
-          { name = 'git' },
-        }, {
-          { name = 'buffer' },
-        }),
-      })
-
-      -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
-      cmp.setup.cmdline({ '/', '?' }, {
-        mapping = cmp.mapping.preset.cmdline(),
-        sources = {
-          { name = 'buffer' },
-        },
-      })
-
-      -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
-      cmp.setup.cmdline(':', {
-        mapping = cmp.mapping.preset.cmdline(),
-        sources = cmp.config.sources({
-          { name = 'path' },
-        }, {
-          { name = 'cmdline' },
-        }),
-      })
-
-      local capabilities = require('cmp_nvim_lsp').default_capabilities()
-
-      -- mason settings
-      mason_lspconfig.setup_handlers({ function(server_name)
-        local opts = { capabilities }
-        opts.on_attach = function(_, bufnr)
-          local bufopts = { silent = true, buffer = bufnr }
-          keymap.set('n', 'gi', lsp.buf.implementation, bufopts)
-          keymap.set('n', 'gr', lsp.buf.references, bufopts)
-          keymap.set('n', 'gT', lsp.buf.type_definition, bufopts)
-          keymap.set('n', 'gD', lsp.buf.declaration, bufopts)
-          keymap.set('n', 'gd', lsp.buf.definition, bufopts)
-          keymap.set('n', 'ga', lsp.buf.code_action, bufopts)
-          keymap.set('n', 'K', lsp.buf.hover, bufopts)
-          keymap.set('n', '<C-k>', lsp.buf.signature_help, bufopts)
-          keymap.set('n', 'gf', lsp.buf.format, bufopts)
-          keymap.set('n', 'ge', vim.diagnostic.open_float, bufopts)
-          keymap.set('n', 'g[', vim.diagnostic.goto_next, bufopts)
-          keymap.set('n', 'g]', vim.diagnostic.goto_prev, bufopts)
-        end
-
-        -- Lua
-        if server_name == 'sumneko_lua' then
-          opts.settings = {
-            Lua = {
-              diagnostics = { globals = { 'vim' } },
-            },
-          }
-        end
-
-        nvim_lsp[server_name].setup(opts)
-      end })
-    end,
+    "mason-org/mason.nvim",
+    build = ":MasonUpdate",
+    cmd = { "Mason", "MasonUpdate", "MasonLog", "MasonInstall", "MasonUninstall", "MasonUninstallAll" },
+    config = true,
   },
-
-  -- none-ls
   {
-    'nvimtools/none-ls.nvim',
-    config = function()
-      local null_ls = require('null-ls')
-
-      null_ls.setup({
-        sources = {
-          null_ls.builtins.formatting.prettier.with({
-            condition = function(utils)
-              return utils.has_file { ".prettierrc", ".prettierrc.js" }
-            end,
-            prefer_local = "node_modules/.bin"
-          })
-        }
-      })
-    end,
+    "mason-org/mason-lspconfig.nvim",
+    dependencies = {
+      { "mason-org/mason.nvim" },
+      { "neovim/nvim-lspconfig" },
+    },
+    event = { "BufReadPre", "BufNewFile" },
+    config = true,
+    keys = {
+      { "<C-k>", "<cmd>lua vim.lsp.completion.get()  <CR>", mode = "i" },
+      { "gh",    "<cmd>lua vim.lsp.buf.hover()       <CR>" },
+      { "gd",    "<cmd>lua vim.lsp.buf.definition()  <CR>" },
+      { "gD",    "<cmd>lua vim.lsp.buf.declaration() <CR>" },
+    },
   },
 }
