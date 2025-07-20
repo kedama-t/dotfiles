@@ -136,7 +136,7 @@ install_essential_tools() {
     
     info "Installing essential tools..."
     
-    local essential_tools=("git" "curl" "wget" "unzip")
+    local essential_tools=("git" "curl" "fzf" "gh")
     
     for tool in "${essential_tools[@]}"; do
         if command_exists "$tool"; then
@@ -149,18 +149,28 @@ install_essential_tools() {
             continue
         fi
         
-        case "$pkg_manager" in
-            brew)
-                brew install "$tool"
+        case "$tool" in
+            fzf)
+                install_fzf "$os" "$pkg_manager"
                 ;;
-            apt)
-                sudo apt update && sudo apt install -y "$tool"
+            gh)
+                install_gh "$os" "$pkg_manager"
                 ;;
-            dnf)
-                sudo dnf install -y "$tool"
-                ;;
-            yum)
-                sudo yum install -y "$tool"
+            *)
+                case "$pkg_manager" in
+                    brew)
+                        brew install "$tool"
+                        ;;
+                    apt)
+                        sudo apt update && sudo apt install -y "$tool"
+                        ;;
+                    dnf)
+                        sudo dnf install -y "$tool"
+                        ;;
+                    yum)
+                        sudo yum install -y "$tool"
+                        ;;
+                esac
                 ;;
         esac
     done
@@ -270,6 +280,82 @@ install_eza() {
             ;;
         yum)
             sudo yum install -y eza
+            ;;
+    esac
+}
+
+install_fzf() {
+    local os="$1"
+    local pkg_manager="$2"
+    
+    if command_exists fzf; then
+        info "fzf is already installed"
+        return
+    fi
+    
+    if [ "$DRY_RUN" = true ]; then
+        info "Would install: fzf"
+        return
+    fi
+    
+    case "$pkg_manager" in
+        brew)
+            brew install fzf
+            ;;
+        apt)
+            sudo apt update && sudo apt install -y fzf
+            ;;
+        dnf)
+            sudo dnf install -y fzf
+            ;;
+        yum)
+            sudo yum install -y fzf
+            ;;
+    esac
+    
+    if [ "$DRY_RUN" = false ] && command_exists fzf; then
+        info "Setting up fzf keybindings and completion..."
+        if [ "$pkg_manager" = "brew" ] && [ -f "$(brew --prefix)/opt/fzf/install" ]; then
+            "$(brew --prefix)/opt/fzf/install" --key-bindings --completion --no-update-rc
+        elif command_exists fzf && [ -f /usr/share/fzf/key-bindings.zsh ]; then
+            info "fzf keybindings will be configured via shell configuration"
+        fi
+    fi
+}
+
+install_gh() {
+    local os="$1"
+    local pkg_manager="$2"
+    
+    if command_exists gh; then
+        info "GitHub CLI (gh) is already installed"
+        return
+    fi
+    
+    if [ "$DRY_RUN" = true ]; then
+        info "Would install: GitHub CLI (gh)"
+        return
+    fi
+    
+    case "$pkg_manager" in
+        brew)
+            brew install gh
+            ;;
+        apt)
+            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+            sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+            sudo apt update && sudo apt install -y gh
+            ;;
+        dnf)
+            sudo dnf install -y 'dnf-command(config-manager)'
+            sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
+            sudo dnf install -y gh
+            ;;
+        yum)
+            sudo yum install -y yum-utils
+            sudo yum-config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
+            sudo yum install -y gh
             ;;
     esac
 }
@@ -442,7 +528,7 @@ create_symlinks() {
 verify_installation() {
     info "Verifying installation..."
     
-    local tools=("git" "curl" "wget" "unzip" "nvim" "go" "zsh")
+    local tools=("git" "curl" "fzf" "gh" "nvim" "go" "zsh")
     local failed=()
     
     for tool in "${tools[@]}"; do
