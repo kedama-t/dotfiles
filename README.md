@@ -1,60 +1,157 @@
 # dotfiles
 
-## Neovim
+macOSとLinux向けの開発環境セットアップ用dotfilesリポジトリです。
 
-### NORMAL
+## セットアップ
 
-- `;` - `:`
-- `<Leader>b` - `:bprev<CR>`(previous buffer)
-- `<Leader>n` - `:bnext<CR>`(next buffer)
-- `<A-[>` - `:nohl`(disable highlight)
+### 自動セットアップ
+
+```bash
+# リポジトリをクローン
+git clone https://github.com/username/dotfiles.git
+cd dotfiles
+
+# 自動セットアップを実行
+./setup.sh
+```
+
+### セットアップオプション
+
+```bash
+# ドライラン（実際の変更なし）
+./setup.sh --dry-run
+
+# 既存設定を強制上書き
+./setup.sh --force
+
+# 最小限のツールのみインストール
+./setup.sh --minimal
+```
+
+## インストールされるツール
+
+### 必須ツール
+
+- **git** - バージョン管理システム
+- **curl** - データ転送ツール
+- **fzf** - コマンドライン用ファジーファインダー
+- **gh** - GitHub CLI
+
+### 開発ツール
+
+- **Neovim** (0.11+) - モダンなテキストエディタ
+- **Node.js** - fnm（Fast Node Manager）経由でインストール
+- **Python環境** - uv（Python package and project manager）
+- **Go** - プログラミング言語
+- **Claude Code** - Anthropic AI CLI
+- **eza** - 高機能なlsの代替
+
+### シェル環境
+
+- **zsh** - モダンなシェル
+- **Oh My Zsh** - zsh用フレームワーク
+- **zsh-autosuggestions** - コマンド補完プラグイン
+- **zsh-syntax-highlighting** - シンタックスハイライトプラグイン
+
+## Neovim設定
+
+### プラグイン構成
+
+- **rose-pine** - カラーテーマ
+- **bufferline.nvim** - タブバー
+- **lualine.nvim** - ステータスバー
+- **indent-blankline.nvim** - インデント表示
+- **hop.nvim** - 高速移動
+- **nvim-treesitter** - シンタックスハイライト
+- **telescope.nvim** - ファジーファインダー
+- **nvim-tree.lua** - ファイルツリー
+- **mason.nvim** - LSPサーバー管理
+- **mason-lspconfig.nvim** - LSP設定
+
+### キーマップ
+
+#### NORMAL モード
+
+| キー | 機能 |
+|------|------|
+| `;` | `:` |
+| `<Leader>b` | 前のバッファ |
+| `<Leader>n` | 次のバッファ |
+| `<A-[>` | ハイライト無効化 |
+| `<Leader>pref` | init.lua編集 |
+| `<Leader>plug` | plugins.lua編集 |
+| `<Leader>sjis` | Shift-JISエンコーディングで開く |
 
 #### hop.nvim
-- `<Leader>m` - `:HopCamelCase<CR>`
+
+| キー | 機能 |
+|------|------|
+| `<Leader>m` | キャメルケース移動 |
 
 #### telescope.nvim
-- `<Leader>ff` - `builtin.find_files`
-- `<Leader>fg` - `builtin.git_files`
-- `<Leader>fr` - `builtin.live_grep`
-- `<Leader>fb` - `builtin.buffers`
-- `<Leader>fh` - `builtin.help_tags`
-- `<Leader>e` - `builtin.diagnostics`
+
+| キー | 機能 |
+|------|------|
+| `<Leader>ff` | ファイル検索 |
+| `<Leader>fg` | Git管理ファイル検索 |
+| `<Leader>fr` | 文字列検索 |
+| `<Leader>fb` | バッファ検索 |
+| `<Leader>fh` | ヘルプ検索 |
+| `<Leader>e` | 診断情報 |
+| `<Leader>o` | treesitter |
 
 #### nvim-tree.lua
 
-- `<Leader>t` - `:NvimTreeToggle<CR>`
+| キー | 機能 |
+|------|------|
+| `<Leader>t` | ファイルツリー表示切替 |
 
 #### LSP
 
-- `gi` - `vim.lsp.buf.implementation`
-- `gr` - `vim.lsp.buf.references`
-- `gT` - `vim.lsp.buf.type_definition`
-- `gD` - `vim.lsp.buf.declaration`
-- `gd` - `vim.lsp.buf.definition`
-- `ga` - `vim.lsp.buf.code_action`
-- `K` - `vim.lsp.buf.hover`
-- `<C-k>` - `vim.lsp.buf.signature_help`
-- `gf` - `vim.lsp.buf.format`
-- `ge` - `vim.diagnostic.open_float`
-- `g[` - `vim.diagnostic.goto_next`
-- `g]` - `vim.diagnostic.goto_prev`
+| キー | 機能 |
+|------|------|
+| `gh` | ホバー情報表示 |
+| `gd` | 定義へジャンプ |
+| `gD` | 宣言へジャンプ |
 
-#### Prettier
+#### INSERT モード
 
-- `<C-p>` - code format with Prettier
+| キー | 機能 |
+|------|------|
+| `<C-s>` | 保存してノーマルモードへ |
+| `<A-[>` | ノーマルモードへ |
+| `<A-x>` | 削除 |
+| `<C-h>` | 左移動 |
+| `<C-j>` | 下移動 |
+| `<C-k>` | 上移動（LSP補完） |
+| `<C-l>` | 右移動 |
 
-### INSERT
+#### TERMINAL モード
 
-#### nvim-cmp
-- `<C-b>` - `cmp.mapping.scroll_docs(-4)`
-- `<C-f>` - `cmp.mapping.scroll_docs(4)`
-- `<C-Space>` - `cmp.mapping.complete()`
-- `<C-e>` - `cmp.mapping.abort()`
-- `<CR>` - `cmp.mapping.confirm({ select = false })`
-- `<Tab>` - `cmp.mapping.confirm({ select = true })`
+| キー | 機能 |
+|------|------|
+| `<ESC>` | ノーマルモードへ |
 
-### TERMINAL
-- `<ESC>` - `<C-\><C-n>`
+### LSP機能
 
-## Keyboard
-- Keymap for [Choco60 rev.2](https://keys.recompile.net/projects/choco60-rev2/)
+- 自動補完（Neovim 0.11+組み込み機能使用）
+- 保存時自動フォーマット
+- mason.nvimによるLSPサーバー管理
+- 日本語文字エンコーディング対応（UTF-8, UTF-16, EUC-JP, Shift-JIS）
+
+## キーボード設定
+
+- [Choco60 rev.2](https://keys.recompile.net/projects/choco60-rev2/)用キーマップ
+- 手動設定が必要（自動セットアップ対象外）
+
+## 対応OS
+
+- macOS（Intel/Apple Silicon）
+- Linux（Ubuntu/Debian系、CentOS/RHEL系）
+
+## 注意事項
+
+- 既存の設定ファイルは`.backup`として保存されます
+- インターネット接続が必要です
+- 実行前に重要なファイルのバックアップを推奨します
+- Claude Codeの認証は初回利用時に手動で実施してください

@@ -23,8 +23,8 @@ Mac および Linux で共通して使える環境構築スクリプト`setup.sh
 
 - git
 - curl
-- wget
-- unzip
+- fzf
+- gh
 
 #### 開発ツール
 
