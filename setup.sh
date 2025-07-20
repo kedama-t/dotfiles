@@ -515,10 +515,31 @@ setup_neovim() {
     fi
 }
 
+setup_claude() {
+    local claude_config_dir="$HOME/.claude"
+    
+    if [ ! -d "$claude_config_dir" ]; then
+        if [ "$DRY_RUN" = true ]; then
+            info "Would create directory: $claude_config_dir"
+        else
+            mkdir -p "$claude_config_dir"
+        fi
+    fi
+    
+    if [ -f "$DOTFILES_DIR/claude/CLAUDE.md" ]; then
+        create_symlink "$DOTFILES_DIR/claude/CLAUDE.md" "$claude_config_dir/CLAUDE.md"
+    fi
+    
+    if [ -f "$DOTFILES_DIR/claude/settings.json" ]; then
+        create_symlink "$DOTFILES_DIR/claude/settings.json" "$claude_config_dir/settings.json"
+    fi
+}
+
 create_symlinks() {
     info "Creating symlinks for configuration files..."
     
     setup_neovim
+    setup_claude
     
     if [ -d "$DOTFILES_DIR/zsh" ]; then
         create_symlink "$DOTFILES_DIR/zsh/.zshrc" "$HOME/.zshrc"
