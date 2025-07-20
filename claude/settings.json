@@ -43,6 +43,5 @@
       "Bash(pkill -9:*)",
       "Bash(killall:*)"
     ]
-  },
-  "model": "claude-sonnet-4"
+  }
 }
