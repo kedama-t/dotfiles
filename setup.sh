@@ -421,8 +421,7 @@ setup_neovim() {
         fi
     fi
     
-    create_symlink "$DOTFILES_DIR/nvim/init.lua" "$nvim_config_dir/init.lua"
-    create_symlink "$DOTFILES_DIR/nvim/lua" "$nvim_config_dir/lua"
+    create_symlink "$DOTFILES_DIR/nvim" "$nvim_config_dir"
     
     if [ "$DRY_RUN" = false ] && command_exists nvim; then
         info "Installing lazy.nvim and syncing plugins..."
