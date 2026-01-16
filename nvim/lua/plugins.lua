@@ -105,6 +105,10 @@ return {
     end,
   },
 
+  -- Code Assistant
+  {
+    "github/copilot.vim",
+  },
   -- LSP
   {
     "mason-org/mason.nvim",
@@ -121,10 +125,19 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     config = true,
     keys = {
-      { "<C-k>", "<cmd>lua vim.lsp.completion.get()  <CR>", mode = "i" },
+      { "<C-k>", "<cmd>lua vim.lsp.completion.get()  <CR>",     mode = "i" },
       { "gh",    "<cmd>lua vim.lsp.buf.hover()       <CR>" },
       { "gd",    "<cmd>lua vim.lsp.buf.definition()  <CR>" },
       { "gD",    "<cmd>lua vim.lsp.buf.declaration() <CR>" },
+      { "gf",    "<cmd>lua vim.lsp.buf.format()  <CR>" },
+      { "gr",    "<cmd>lua vim.lsp.buf.references()  <CR>" },
+      { "gi",    "<cmd>lua vim.lsp.buf.implementation()  <CR>" },
+      { "gt",    "<cmd>lua vim.lsp.buf.type_definition()  <CR>" },
+      { "gn",    "<cmd>lua vim.lsp.buf.rename()  <CR>" },
+      { "ga",    "<cmd>lua vim.lsp.buf.code_action()  <CR>" },
+      { "ge",    "<cmd>lua vim.diagnostic.open_float()  <CR>" },
+      { "g]",    "<cmd>lua vim.diagnostic.goto_next()  <CR>" },
+      { "g[",    "<cmd>lua vim.diagnostic.goto_prev()  <CR>" },
     },
   },
 }
