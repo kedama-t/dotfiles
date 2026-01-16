@@ -19,7 +19,11 @@ opt.rtp:prepend(lazypath)
 
 local plugins = require('plugins')
 
-require('lazy').setup(plugins)
+require('lazy').setup(
+  {
+    spec = plugins,
+    checker = { enabled = true },
+  })
 --
 
 -- option
@@ -93,4 +97,14 @@ vim.api.nvim_create_autocmd("LspAttach", {
       })
     end
   end,
+}
+)
+
+vim.lsp.config("lua_ls", {
+  settings = {
+    Lua = {
+      diagnostics = {
+        globals = { "vim" } }
+    }
+  }
 })
