@@ -41,6 +41,7 @@ cd dotfiles
 
 - **Neovim** (0.11+) - モダンなテキストエディタ
 - **Node.js** - fnm（Fast Node Manager）経由でインストール
+- **Bun** - 高速なJavaScriptランタイム・パッケージマネージャー
 - **Python環境** - uv（Python package and project manager）
 - **Go** - プログラミング言語
 - **Claude Code** - Anthropic AI CLI

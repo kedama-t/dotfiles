@@ -179,12 +179,13 @@ install_essential_tools() {
 install_dev_tools() {
     local os="$1"
     local pkg_manager="$2"
-    
+
     info "Installing development tools..."
-    
+
     install_neovim "$os" "$pkg_manager"
     install_go "$os" "$pkg_manager"
     setup_nodejs
+    setup_bun
     setup_python
     setup_claude_code
     install_eza "$os" "$pkg_manager"
@@ -391,14 +392,29 @@ setup_python() {
         info "uv is already installed"
         return
     fi
-    
+
     if [ "$DRY_RUN" = true ]; then
         info "Would install: uv"
         return
     fi
-    
+
     info "Installing uv..."
     curl -LsSf https://astral.sh/uv/install.sh | sh
+}
+
+setup_bun() {
+    if command_exists bun; then
+        info "Bun is already installed"
+        return
+    fi
+
+    if [ "$DRY_RUN" = true ]; then
+        info "Would install: Bun"
+        return
+    fi
+
+    info "Installing Bun..."
+    curl -fsSL https://bun.sh/install | bash
 }
 
 setup_claude_code() {
@@ -548,8 +564,8 @@ create_symlinks() {
 
 verify_installation() {
     info "Verifying installation..."
-    
-    local tools=("git" "curl" "fzf" "gh" "nvim" "go" "zsh")
+
+    local tools=("git" "curl" "fzf" "gh" "nvim" "go" "bun" "zsh")
     local failed=()
     
     for tool in "${tools[@]}"; do
