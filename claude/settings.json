@@ -43,5 +43,6 @@
       "Bash(pkill -9:*)",
       "Bash(killall:*)"
     ]
-  }
+  },
+  "language": "japanese"
 }
