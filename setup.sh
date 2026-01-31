@@ -188,6 +188,7 @@ install_dev_tools() {
     setup_bun
     setup_python
     setup_claude_code
+    setup_gemini_cli
     install_eza "$os" "$pkg_manager"
 }
 
@@ -422,19 +423,39 @@ setup_claude_code() {
         info "Claude Code is already installed"
         return
     fi
-    
+
     if [ "$DRY_RUN" = true ]; then
         info "Would install: Claude Code"
         return
     fi
-    
+
     if ! command_exists npm; then
         warning "npm not found. Please install Node.js first."
         return
     fi
-    
+
     info "Installing Claude Code..."
     npm install -g @anthropic-ai/claude-code
+}
+
+setup_gemini_cli() {
+    if command_exists gemini; then
+        info "Gemini CLI is already installed"
+        return
+    fi
+
+    if [ "$DRY_RUN" = true ]; then
+        info "Would install: Gemini CLI"
+        return
+    fi
+
+    if ! command_exists npm; then
+        warning "npm not found. Please install Node.js first."
+        return
+    fi
+
+    info "Installing Gemini CLI..."
+    npm install -g @google/gemini-cli
 }
 
 setup_zsh() {
@@ -549,6 +570,10 @@ setup_claude() {
     if [ -f "$DOTFILES_DIR/claude/settings.json" ]; then
         create_symlink "$DOTFILES_DIR/claude/settings.json" "$claude_config_dir/settings.json"
     fi
+
+    if [ -d "$DOTFILES_DIR/claude/commands" ]; then
+        create_symlink "$DOTFILES_DIR/claude/commands" "$claude_config_dir/commands"
+    fi
 }
 
 create_symlinks() {
@@ -565,7 +590,7 @@ create_symlinks() {
 verify_installation() {
     info "Verifying installation..."
 
-    local tools=("git" "curl" "fzf" "gh" "nvim" "go" "bun" "zsh")
+    local tools=("git" "curl" "fzf" "gh" "nvim" "go" "bun" "gemini" "zsh")
     local failed=()
     
     for tool in "${tools[@]}"; do
