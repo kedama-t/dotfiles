@@ -16,6 +16,7 @@
       "Bash(docker logs:*)",
       "Bash(kubectl get:*)",
       "Bash(helm list)",
+      "Bash(gemini:*)",
       "WebSearch",
       "WebFetch"
     ],
