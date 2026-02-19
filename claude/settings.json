@@ -45,5 +45,7 @@
       "Bash(killall:*)"
     ]
   },
-  "language": "japanese"
+  "language": "japanese",
+  "syntaxHighlightingDisabled": false,
+  "autoUpdatesChannel": "latest"
 }
