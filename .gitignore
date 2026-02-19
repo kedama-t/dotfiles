@@ -1,4 +1,6 @@
 .DS_Store
 *.backup
+.nvimlog
 
+node_modules
 dist

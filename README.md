@@ -4,55 +4,44 @@ macOSとLinux向けの開発環境セットアップ用dotfilesリポジトリ�
 
 ## セットアップ
 
-### 自動セットアップ
+### 実行方法
 
 ```bash
 # リポジトリをクローン
 git clone https://github.com/username/dotfiles.git
 cd dotfiles
 
-# 自動セットアップを実行
+# Bun導入 + 対話式インストーラー起動
 ./setup.sh
 ```
 
-### セットアップオプション
+`setup.sh` は最初に Bun をインストール（未導入時のみ）し、その後 `bun run setup.ts` を実行します。
+`setup.ts` は `citty` ベースの対話型 CLI で、各ツールを順番にインストールするか確認します。
+すでに導入済みのツールはインストール済みバージョンと最新バージョンを表示し、最新なら自動スキップされます。
+
+### オプション
 
 ```bash
-# ドライラン（実際の変更なし）
-./setup.sh --dry-run
-
-# 既存設定を強制上書き
+# 既存設定のシンボリックリンク上書きを許可
 ./setup.sh --force
 
-# 最小限のツールのみインストール
-./setup.sh --minimal
+# 確認をスキップして進める
+./setup.sh --yes
+
+# 実際には変更せず、実行内容だけ確認
+./setup.sh --dryRun
 ```
 
 ## インストールされるツール
 
-### 必須ツール
-
-- **git** - バージョン管理システム
-- **curl** - データ転送ツール
-- **fzf** - コマンドライン用ファジーファインダー
-- **gh** - GitHub CLI
-
-### 開発ツール
-
-- **Neovim** (0.11+) - モダンなテキストエディタ
-- **Node.js** - fnm（Fast Node Manager）経由でインストール
-- **Bun** - 高速なJavaScriptランタイム・パッケージマネージャー
-- **Python環境** - uv（Python package and project manager）
-- **Go** - プログラミング言語
-- **Claude Code** - Anthropic AI CLI
-- **eza** - 高機能なlsの代替
-
-### シェル環境
-
-- **zsh** - モダンなシェル
-- **Oh My Zsh** - zsh用フレームワーク
-- **zsh-autosuggestions** - コマンド補完プラグイン
-- **zsh-syntax-highlighting** - シンタックスハイライトプラグイン
+- **Bun**（`setup.sh` で最初に導入）
+- **Neovim**（最新版、0.11+）
+- **uv**（Python package and project manager）
+- **Claude Code**（Anthropic CLI）
+- **Codex CLI**
+- **Gemini CLI**
+- **@kami-pkm/kami**（bun 専用 npm パッケージ）
+- **eza**
 
 ## Neovim設定
 
