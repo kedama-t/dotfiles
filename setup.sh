@@ -61,7 +61,7 @@ Options:
   --help       Show this help
   --dry-run    Alias of setup.ts --dryRun
   --dryRun     Show commands without executing
-  --force      Force overwrite when creating symlinks
+  --force      Force overwrite for symlink targets (nvim/zshrc)
   --yes        Install/update without interactive confirmations
 EOF
     return 0

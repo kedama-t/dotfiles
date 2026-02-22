@@ -1,7 +1,7 @@
 import { defineCommand, runMain } from "citty";
 import { homedir } from "node:os";
 import { existsSync } from "node:fs";
-import { mkdir, readFile, rm, symlink } from "node:fs/promises";
+import { cp, mkdir, readFile, rm, symlink } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
 type OsType = "macos" | "debian" | "rhel" | "linux";
@@ -269,26 +269,40 @@ async function createSymlink(source: string, target: string, force: boolean, dry
   ok(`Linked: ${target}`);
 }
 
-async function createDotfileSymlinks(force: boolean, dryRun: boolean): Promise<void> {
-  info("Config symlinks");
+async function copyPathWithPrompt(source: string, target: string, dryRun: boolean, yesFlag: boolean): Promise<void> {
+  if (!existsSync(source)) {
+    warn(`Skipped copy (source missing): ${source}`);
+    return;
+  }
+
+  if (dryRun) {
+    info(`[dry-run] copy ${source} -> ${target}`);
+    return;
+  }
+
+  await ensureParentDir(target);
+
+  if (existsSync(target)) {
+    const shouldOverwrite = await askYesNo(`Target exists. Overwrite with copy? ${target}`, false, yesFlag);
+    if (!shouldOverwrite) {
+      warn(`Copy skipped by user: ${target}`);
+      return;
+    }
+    await rm(target, { recursive: true, force: true });
+  }
+
+  await cp(source, target, { recursive: true });
+  ok(`Copied: ${target}`);
+}
+
+async function createDotfileSymlinks(force: boolean, dryRun: boolean, yesFlag: boolean): Promise<void> {
+  info("Config setup");
 
   await createSymlink(join(dotfilesDir, "nvim"), join(home, ".config", "nvim"), force, dryRun);
   await createSymlink(join(dotfilesDir, "zsh", ".zshrc"), join(home, ".zshrc"), force, dryRun);
 
-  const claudeDir = join(home, ".claude");
-  if (!dryRun) {
-    await mkdir(claudeDir, { recursive: true });
-  } else {
-    info(`[dry-run] mkdir -p ${claudeDir}`);
-  }
-
-  await createSymlink(join(dotfilesDir, "claude", "CLAUDE.md"), join(claudeDir, "CLAUDE.md"), force, dryRun);
-  await createSymlink(join(dotfilesDir, "claude", "settings.json"), join(claudeDir, "settings.json"), force, dryRun);
-
-  const commandsDir = join(dotfilesDir, "claude", "commands");
-  if (existsSync(commandsDir)) {
-    await createSymlink(commandsDir, join(claudeDir, "commands"), force, dryRun);
-  }
+  await copyPathWithPrompt(join(dotfilesDir, "claude"), join(home, ".claude"), dryRun, yesFlag);
+  await copyPathWithPrompt(join(dotfilesDir, "codex"), join(home, ".codex"), dryRun, yesFlag);
 
   if (commandExists("nvim")) {
     await runInstallStep("lazy.nvim sync", "nvim --headless '+Lazy! sync' +qa", dryRun);
@@ -403,7 +417,7 @@ const main = defineCommand({
     },
     force: {
       type: "boolean",
-      description: "Force overwrite when creating symlinks",
+      description: "Force overwrite for symlink targets (nvim/zshrc)",
       default: false,
     },
     yes: {
@@ -489,8 +503,8 @@ const main = defineCommand({
     }
 
     console.log("\n--------------------------------------------------");
-    info("Symlink setup");
-    await createDotfileSymlinks(Boolean(args.force), Boolean(args.dryRun));
+    info("Config setup");
+    await createDotfileSymlinks(Boolean(args.force), Boolean(args.dryRun), Boolean(args.yes));
 
     console.log("\n==================================================");
     info("Summary");
