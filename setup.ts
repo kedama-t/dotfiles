@@ -350,7 +350,7 @@ async function createTools(ctx: ToolContext): Promise<Tool[]> {
         return parseFirstVersion(runShell("claude --version").stdout);
       },
       getLatestVersion: async () => fetchNpmLatestVersion("@anthropic-ai/claude-code"),
-      install: async (innerCtx) => runInstallStep("Install Claude Code", "bun add -g @anthropic-ai/claude-code", innerCtx.dryRun),
+      install: async (innerCtx) => runInstallStep("Install Claude Code", "curl -fsSL https://claude.ai/install.sh | bash", innerCtx.dryRun),
     },
     {
       id: "codex",
