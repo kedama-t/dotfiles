@@ -29,11 +29,10 @@ Mac および Linux で共通して使える環境構築スクリプト`setup.sh
 #### 開発ツール
 
 - Neovim（最新版、0.11+）
-- Node.js 環境
-  - fnm（Fast Node Manager）
+- JavaScript/TypeScript 環境
+  - Bun（Node.js の代替ランタイム / パッケージマネージャ）
 - Python 環境
   - uv（Python package and project manager）
-- Go（最新版）
 - Claude Code（Anthropic CLI）
 
 #### シェル環境
@@ -75,11 +74,10 @@ Mac および Linux で共通して使える環境構築スクリプト`setup.sh
   - zsh-autosuggestions
   - zsh-syntax-highlighting
 
-#### Node.js 環境設定
+#### JavaScript/TypeScript 環境設定
 
-- fnm（Fast Node Manager）のインストール
-- Node.js LTS 版のインストールと設定
-- npm グローバルパッケージの基本設定
+- Bun のインストール（`curl -fsSL https://bun.sh/install | bash`）
+- グローバルパッケージは `bun add -g` で導入
 
 #### Python 環境設定
 
@@ -97,26 +95,26 @@ Mac および Linux で共通して使える環境構築スクリプト`setup.sh
 
 - Homebrew の自動インストール
 - `brew install` コマンドでパッケージインストール
-- fnm（Fast Node Manager）のインストール(`curl -fsSL https://fnm.vercel.app/install | bash`)
+- Bun のインストール（`curl -fsSL https://bun.sh/install | bash`）
 - uv のインストール（`curl -LsSf https://astral.sh/uv/install.sh | sh`）
-- Claude Code のインストール（`npm install -g @anthropic-ai/claude-code`）
+- Claude Code のインストール（`curl -fsSL https://claude.ai/install.sh | bash`）
 - macOS 特有の設定適用
 
 #### Linux（Ubuntu/Debian）
 
 - `apt update && apt install` でパッケージインストール
 - AppImage や snap パッケージの利用（Neovim 等）
-- fnm のインストール(`curl -fsSL https://fnm.vercel.app/install | bash`)
+- Bun のインストール（`curl -fsSL https://bun.sh/install | bash`）
 - uv のインストール（`curl -LsSf https://astral.sh/uv/install.sh | sh`）
-- Claude Code のインストール（`npm install -g @anthropic-ai/claude-code`）
+- Claude Code のインストール（`curl -fsSL https://claude.ai/install.sh | bash`）
 
 #### Linux（CentOS/RHEL）
 
 - `yum install` または `dnf install` でパッケージインストール
 - EPEL リポジトリの有効化
-- fnm のインストール(`curl -fsSL https://fnm.vercel.app/install | bash`)
+- Bun のインストール（`curl -fsSL https://bun.sh/install | bash`）
 - uv のインストール（`curl -LsSf https://astral.sh/uv/install.sh | sh`）
-- Claude Code のインストール（`npm install -g @anthropic-ai/claude-code`）
+- Claude Code のインストール（`curl -fsSL https://claude.ai/install.sh | bash`）
 
 ### 4. 実装仕様
 
@@ -140,8 +138,8 @@ install_dev_tools()
 # Zsh + Oh My Zsh セットアップ
 setup_zsh()
 
-# Node.js環境セットアップ
-setup_nodejs()
+# JavaScript/TypeScript環境セットアップ（Bun）
+setup_bun()
 
 # Python環境セットアップ
 setup_python()
