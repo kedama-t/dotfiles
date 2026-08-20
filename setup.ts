@@ -346,7 +346,6 @@ async function createDotfileSymlinks(force: boolean, dryRun: boolean): Promise<v
   const claudeHome = join(home, ".claude");
   await createSymlink(join(dotfilesDir, "claude", "CLAUDE.md"), join(claudeHome, "CLAUDE.md"), force, dryRun);
   await createSymlink(join(dotfilesDir, "claude", "settings.json"), join(claudeHome, "settings.json"), force, dryRun);
-  await createSymlink(join(dotfilesDir, "claude", "references"), join(claudeHome, "references"), force, dryRun);
   await linkDirEntries(join(dotfilesDir, "claude", "commands"), join(claudeHome, "commands"), force, dryRun);
   await linkDirEntries(join(dotfilesDir, "claude", "skills"), join(claudeHome, "skills"), force, dryRun);
 

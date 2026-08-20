@@ -56,7 +56,6 @@ cd dotfiles
 | `zsh/.zshrc` | `~/.zshrc` |
 | `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` |
 | `claude/settings.json` | `~/.claude/settings.json` |
-| `claude/references/` | `~/.claude/references` |
 | `claude/commands/*` | `~/.claude/commands/*` |
 | `claude/skills/*` | `~/.claude/skills/*` |
 | `codex/skills/*` | `~/.codex/skills/*` |
