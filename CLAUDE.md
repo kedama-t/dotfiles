@@ -16,12 +16,12 @@ nvim/                 # Neovim config -> ~/.config/nvim
   lua/plugins.lua     # Plugin definitions
   lazy-lock.json      # Plugin version lockfile (managed by lazy.nvim)
 zsh/.zshrc            # -> ~/.zshrc (assumes Oh My Zsh + plugins)
-claude/               # -> linked entry by entry into ~/.claude
-  CLAUDE.md           # Global user instructions
-  settings.json       # Permissions and Claude Code settings
-  references/         # Detailed guidance referenced from CLAUDE.md
-  skills/             # Agent skills
-codex/skills/         # -> linked entry by entry into ~/.codex/skills
+claude/               # Single source for all coding harnesses
+  CLAUDE.md           # Global instructions -> ~/.claude/CLAUDE.md,
+                      #   ~/.codex/AGENTS.md, ~/.config/opencode/AGENTS.md
+  settings.json       # Permissions and Claude Code settings (Claude Code only)
+  skills/             # Agent skills -> ~/.claude/skills, ~/.agents/skills,
+                      #   ~/.config/opencode/skills (entry by entry)
 keyboard/             # Choco60 rev.2 layout (manual setup, not automated)
 ```
 
@@ -30,9 +30,13 @@ keyboard/             # Choco60 rev.2 layout (manual setup, not automated)
 - `setup.sh` only bootstraps Bun and delegates to `setup.ts`; all real logic lives in `setup.ts`.
 - Adding a tool means appending a `Tool` entry in `createTools()` with installed-version
   detection, latest-version lookup, and an install command.
-- Config placement is **symlink only**. `~/.claude` and `~/.codex` hold agent-generated
-  conversation history and caches, so they are linked entry by entry — never as a whole
-  directory, which would delete that data.
+- Config placement is **symlink only**. `~/.claude`, `~/.codex`, and `~/.config/opencode`
+  hold agent-generated conversation history and caches, so they are linked entry by entry —
+  never as a whole directory, which would delete that data.
+- Global instructions and skills are shared across Claude Code / Codex / opencode from the
+  single source in `claude/`. Add a harness by extending `agentInstructionTargets` and
+  `agentSkillTargets` in `setup.ts`. Codex user skills go to `~/.agents/skills`;
+  `~/.codex/skills` is Codex's own system-skill directory and is left alone.
 - Verify changes with `bun run setup.ts --dryRun --yes`; it performs no writes.
 - See `PLAN.md` for the full specification, including what is intentionally unimplemented.
 

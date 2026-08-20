@@ -40,6 +40,7 @@ cd dotfiles
 - **Claude Code**（Anthropic CLI）
 - **Codex CLI**
 - **Gemini CLI**
+- **opencode**
 - **herdr**（AI コーディングエージェント向けターミナルマルチプレクサ）
 - **eza**
 - **zsh** + **Oh My Zsh**（`zsh-autosuggestions` / `zsh-syntax-highlighting` プラグイン込み）
@@ -54,11 +55,24 @@ cd dotfiles
 |------|------|
 | `nvim/` | `~/.config/nvim` |
 | `zsh/.zshrc` | `~/.zshrc` |
-| `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` |
 | `claude/settings.json` | `~/.claude/settings.json` |
 | `claude/commands/*` | `~/.claude/commands/*` |
-| `claude/skills/*` | `~/.claude/skills/*` |
-| `codex/skills/*` | `~/.codex/skills/*` |
+
+グローバル指示（`claude/CLAUDE.md`）と skills（`claude/skills/*`）は
+Claude Code / Codex / opencode で同じ内容を使うため、実体を `claude/` に一本化し、
+各ハーネスが読む名前・場所へリンクします。
+
+| リンク元（リポジトリ） | リンク先 | ハーネス |
+|------|------|------|
+| `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Claude Code |
+| `claude/CLAUDE.md` | `~/.codex/AGENTS.md` | Codex |
+| `claude/CLAUDE.md` | `~/.config/opencode/AGENTS.md` | opencode |
+| `claude/skills/*` | `~/.claude/skills/*` | Claude Code |
+| `claude/skills/*` | `~/.agents/skills/*` | Codex（USER スコープ） |
+| `claude/skills/*` | `~/.config/opencode/skills/*` | opencode |
+
+Codex のユーザースキルは `~/.agents/skills` に置きます。`~/.codex/skills` は
+Codex 同梱のシステムスキル置き場なので触りません。
 
 リンク先に実体がある場合は `.backup` を作成したうえで `--force` 指定時のみ置き換えます。
 

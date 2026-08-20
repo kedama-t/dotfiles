@@ -246,6 +246,13 @@ function getHerdrInstallCommand(ctx: ToolContext): string {
   return "curl -fsSL https://herdr.dev/install.sh | sh";
 }
 
+// opencode は公式が tap の利用を推奨している（homebrew/core の formula より追従が早い）。
+// tap を使えない環境では公式インストーラにフォールバックする。
+function getOpencodeInstallCommand(ctx: ToolContext): string {
+  if (ctx.pkgManager === "brew") return "brew install anomalyco/tap/opencode";
+  return "curl -fsSL https://opencode.ai/install | bash";
+}
+
 async function ensureParentDir(path: string): Promise<void> {
   await mkdir(dirname(path), { recursive: true });
 }
@@ -339,17 +346,40 @@ async function setupZsh(ctx: ToolContext): Promise<void> {
   }
 }
 
+// グローバル指示と skills はハーネス間で同じ内容を使いたいので、実体は claude/ に一本化し、
+// codex / opencode へはそれぞれが読む名前・場所でリンクする。
+const agentInstructionTargets = [
+  join(home, ".claude", "CLAUDE.md"),
+  join(home, ".codex", "AGENTS.md"),
+  join(home, ".config", "opencode", "AGENTS.md"),
+];
+
+// codex のユーザースキルは ~/.agents/skills（公式ドキュメントの USER スコープ）。
+// ~/.codex/skills は codex 同梱のシステムスキル置き場なので触らない。
+const agentSkillTargets = [
+  join(home, ".claude", "skills"),
+  join(home, ".agents", "skills"),
+  join(home, ".config", "opencode", "skills"),
+];
+
 async function createDotfileSymlinks(force: boolean, dryRun: boolean): Promise<void> {
   await createSymlink(join(dotfilesDir, "nvim"), join(home, ".config", "nvim"), force, dryRun);
   await createSymlink(join(dotfilesDir, "zsh", ".zshrc"), join(home, ".zshrc"), force, dryRun);
 
+  const instructions = join(dotfilesDir, "claude", "CLAUDE.md");
+  for (const target of agentInstructionTargets) {
+    await createSymlink(instructions, target, force, dryRun);
+  }
+
+  const skills = join(dotfilesDir, "claude", "skills");
+  for (const target of agentSkillTargets) {
+    await linkDirEntries(skills, target, force, dryRun);
+  }
+
+  // settings.json と commands は Claude Code 固有なので共有しない。
   const claudeHome = join(home, ".claude");
-  await createSymlink(join(dotfilesDir, "claude", "CLAUDE.md"), join(claudeHome, "CLAUDE.md"), force, dryRun);
   await createSymlink(join(dotfilesDir, "claude", "settings.json"), join(claudeHome, "settings.json"), force, dryRun);
   await linkDirEntries(join(dotfilesDir, "claude", "commands"), join(claudeHome, "commands"), force, dryRun);
-  await linkDirEntries(join(dotfilesDir, "claude", "skills"), join(claudeHome, "skills"), force, dryRun);
-
-  await linkDirEntries(join(dotfilesDir, "codex", "skills"), join(home, ".codex", "skills"), force, dryRun);
 
   if (commandExists("nvim")) {
     await runInstallStep("lazy.nvim sync", "nvim --headless '+Lazy! sync' +qa", dryRun);
@@ -422,6 +452,16 @@ async function createTools(ctx: ToolContext): Promise<Tool[]> {
       },
       getLatestVersion: async () => fetchNpmLatestVersion("@google/gemini-cli"),
       install: async (innerCtx) => runInstallStep("Install Gemini CLI", "bun add -g @google/gemini-cli", innerCtx.dryRun),
+    },
+    {
+      id: "opencode",
+      name: "opencode",
+      getInstalledVersion: async () => {
+        if (!commandExists("opencode")) return null;
+        return parseFirstVersion(runShell("opencode --version").stdout);
+      },
+      getLatestVersion: async () => fetchGithubLatestTag("anomalyco", "opencode"),
+      install: async (innerCtx) => runInstallStep("Install opencode", getOpencodeInstallCommand(innerCtx), innerCtx.dryRun),
     },
     {
       id: "herdr",

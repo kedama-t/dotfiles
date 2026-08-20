@@ -31,6 +31,7 @@ Mac および Linux で共通して使える環境構築スクリプトの仕様
 | Claude Code | Anthropic CLI | npm registry | `curl -fsSL https://claude.ai/install.sh \| bash` |
 | Codex CLI | OpenAI CLI | npm registry | `bun add -g @openai/codex` |
 | Gemini CLI | Google CLI | npm registry | `bun add -g @google/gemini-cli` |
+| opencode | AI コーディングエージェント（ターミナル） | GitHub releases | macOS は `brew install anomalyco/tap/opencode`、他は `curl -fsSL https://opencode.ai/install \| bash` |
 | herdr | AI コーディングエージェント向けターミナルマルチプレクサ | GitHub releases | macOS は `brew install herdr`、他は `curl -fsSL https://herdr.dev/install.sh \| sh` |
 | eza | `ls` の代替（`.zshrc` でエイリアス） | GitHub releases | brew / apt / dnf / yum |
 
@@ -48,18 +49,29 @@ Mac および Linux で共通して使える環境構築スクリプトの仕様
 すべてシンボリックリンクで配置する。
 
 ```
-~/.config/nvim            -> nvim/
-~/.zshrc                  -> zsh/.zshrc
-~/.claude/CLAUDE.md       -> claude/CLAUDE.md
-~/.claude/settings.json   -> claude/settings.json
-~/.claude/references      -> claude/references/
-~/.claude/commands/*      -> claude/commands/*
-~/.claude/skills/*        -> claude/skills/*
-~/.codex/skills/*         -> codex/skills/*
+~/.config/nvim                    -> nvim/
+~/.zshrc                          -> zsh/.zshrc
+~/.claude/settings.json           -> claude/settings.json
+~/.claude/commands/*              -> claude/commands/*
+
+# 以下はコーディングハーネス間で共有する（実体は claude/ に一本化）
+~/.claude/CLAUDE.md               -> claude/CLAUDE.md
+~/.codex/AGENTS.md                -> claude/CLAUDE.md
+~/.config/opencode/AGENTS.md      -> claude/CLAUDE.md
+~/.claude/skills/*                -> claude/skills/*
+~/.agents/skills/*                -> claude/skills/*
+~/.config/opencode/skills/*       -> claude/skills/*
 ```
 
-`~/.claude` と `~/.codex` にはエージェントが生成する会話履歴・セッション・キャッシュが
-同居するため、ディレクトリ単位ではなく **エントリ単位** でリンクする。
+グローバル指示と skills は Claude Code / Codex / opencode で同じ内容を使うため、
+実体を `claude/` に置き、各ハーネスが読む名前・場所へリンクする。
+`settings.json` と `commands/` は Claude Code 固有なので共有しない。
+
+Codex のユーザースキルの置き場は `~/.agents/skills`（公式ドキュメントの USER スコープ）。
+`~/.codex/skills` は Codex 同梱のシステムスキル（`.system/`）の置き場なので触らない。
+
+`~/.claude` と `~/.codex`、`~/.config/opencode` にはエージェントが生成する会話履歴・
+セッション・キャッシュが同居するため、ディレクトリ単位ではなく **エントリ単位** でリンクする。
 ディレクトリごとコピー／置換すると、これらのデータを巻き込んで消してしまう。
 
 リンク先に実体がある場合は `.backup` を作成したうえで、`--force` 指定時のみ置き換える。
@@ -104,7 +116,7 @@ Mac および Linux で共通して使える環境構築スクリプトの仕様
 - パッケージインストールで sudo を求められる場合がある
 - 置き換えられた設定ファイルは `.backup` として保存される
 - インターネット接続が必要
-- Claude Code / Codex / Gemini の認証は初回利用時にユーザーが実施する
+- Claude Code / Codex / Gemini / opencode の認証は初回利用時にユーザーが実施する
 
 ### 7. 未実装 / 今後の拡張予定
 
