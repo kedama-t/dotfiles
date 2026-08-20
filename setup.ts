@@ -1,7 +1,7 @@
 import { defineCommand, runMain } from "citty";
 import { homedir } from "node:os";
 import { existsSync } from "node:fs";
-import { cp, mkdir, readFile, rm, symlink } from "node:fs/promises";
+import { mkdir, readFile, readdir, rm, symlink } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
 type OsType = "macos" | "debian" | "rhel" | "linux";
@@ -229,6 +229,23 @@ function getEzaInstallCommand(ctx: ToolContext): string | null {
   return null;
 }
 
+function getZshInstallCommand(ctx: ToolContext): string | null {
+  const { pkgManager } = ctx;
+  if (!pkgManager) return null;
+  if (pkgManager === "brew") return "brew install zsh";
+  if (pkgManager === "apt") return "sudo apt update && sudo apt install -y zsh";
+  if (pkgManager === "dnf") return "sudo dnf install -y zsh";
+  if (pkgManager === "yum") return "sudo yum install -y zsh";
+  return null;
+}
+
+// herdr は公式インストーラ（単一バイナリ配布）が全 OS 共通。
+// macOS では更新を brew に一元化したいので brew を優先する。
+function getHerdrInstallCommand(ctx: ToolContext): string {
+  if (ctx.pkgManager === "brew") return "brew install herdr";
+  return "curl -fsSL https://herdr.dev/install.sh | sh";
+}
+
 async function ensureParentDir(path: string): Promise<void> {
   await mkdir(dirname(path), { recursive: true });
 }
@@ -269,40 +286,71 @@ async function createSymlink(source: string, target: string, force: boolean, dry
   ok(`Linked: ${target}`);
 }
 
-async function copyPathWithPrompt(source: string, target: string, dryRun: boolean, yesFlag: boolean): Promise<void> {
-  if (!existsSync(source)) {
-    warn(`Skipped copy (source missing): ${source}`);
-    return;
+// ~/.claude や ~/.codex にはエージェントが生成する会話履歴やキャッシュが同居する。
+// ディレクトリ単位でリンク／コピーするとそれらを巻き込んで消すため、
+// dotfiles で管理したいエントリだけを 1 つずつリンクする。
+async function linkDirEntries(sourceDir: string, targetDir: string, force: boolean, dryRun: boolean): Promise<void> {
+  if (!existsSync(sourceDir)) return;
+
+  for (const entry of await readdir(sourceDir)) {
+    if (entry === ".DS_Store") continue;
+    await createSymlink(join(sourceDir, entry), join(targetDir, entry), force, dryRun);
   }
-
-  if (dryRun) {
-    info(`[dry-run] copy ${source} -> ${target}`);
-    return;
-  }
-
-  await ensureParentDir(target);
-
-  if (existsSync(target)) {
-    const shouldOverwrite = await askYesNo(`Target exists. Overwrite with copy? ${target}`, false, yesFlag);
-    if (!shouldOverwrite) {
-      warn(`Copy skipped by user: ${target}`);
-      return;
-    }
-    await rm(target, { recursive: true, force: true });
-  }
-
-  await cp(source, target, { recursive: true });
-  ok(`Copied: ${target}`);
 }
 
-async function createDotfileSymlinks(force: boolean, dryRun: boolean, yesFlag: boolean): Promise<void> {
-  info("Config setup");
+// .zshrc は oh-my-zsh とプラグインの存在を前提にしているので、
+// symlink を張る前にそれらを用意しておく。
+async function setupZsh(ctx: ToolContext): Promise<void> {
+  if (!commandExists("zsh")) {
+    const cmd = getZshInstallCommand(ctx);
+    if (cmd) {
+      await runInstallStep("Install zsh", cmd, ctx.dryRun);
+    } else {
+      fail("No supported package manager found for zsh install.");
+    }
+  } else {
+    info("zsh: already installed");
+  }
 
+  const ohMyZshDir = join(home, ".oh-my-zsh");
+  if (existsSync(ohMyZshDir)) {
+    info("Oh My Zsh: already installed");
+  } else {
+    // --keep-zshrc: インストーラに dotfiles の .zshrc を差し替えさせない
+    await runInstallStep(
+      "Install Oh My Zsh",
+      'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc',
+      ctx.dryRun,
+    );
+  }
+
+  const plugins = [
+    { name: "zsh-autosuggestions", repo: "https://github.com/zsh-users/zsh-autosuggestions" },
+    { name: "zsh-syntax-highlighting", repo: "https://github.com/zsh-users/zsh-syntax-highlighting" },
+  ];
+
+  for (const plugin of plugins) {
+    const dest = join(ohMyZshDir, "custom", "plugins", plugin.name);
+    if (existsSync(dest)) {
+      info(`${plugin.name}: already installed`);
+      continue;
+    }
+    await runInstallStep(`Install ${plugin.name}`, `git clone --depth 1 ${plugin.repo} '${dest}'`, ctx.dryRun);
+  }
+}
+
+async function createDotfileSymlinks(force: boolean, dryRun: boolean): Promise<void> {
   await createSymlink(join(dotfilesDir, "nvim"), join(home, ".config", "nvim"), force, dryRun);
   await createSymlink(join(dotfilesDir, "zsh", ".zshrc"), join(home, ".zshrc"), force, dryRun);
 
-  await copyPathWithPrompt(join(dotfilesDir, "claude"), join(home, ".claude"), dryRun, yesFlag);
-  await copyPathWithPrompt(join(dotfilesDir, "codex"), join(home, ".codex"), dryRun, yesFlag);
+  const claudeHome = join(home, ".claude");
+  await createSymlink(join(dotfilesDir, "claude", "CLAUDE.md"), join(claudeHome, "CLAUDE.md"), force, dryRun);
+  await createSymlink(join(dotfilesDir, "claude", "settings.json"), join(claudeHome, "settings.json"), force, dryRun);
+  await createSymlink(join(dotfilesDir, "claude", "references"), join(claudeHome, "references"), force, dryRun);
+  await linkDirEntries(join(dotfilesDir, "claude", "commands"), join(claudeHome, "commands"), force, dryRun);
+  await linkDirEntries(join(dotfilesDir, "claude", "skills"), join(claudeHome, "skills"), force, dryRun);
+
+  await linkDirEntries(join(dotfilesDir, "codex", "skills"), join(home, ".codex", "skills"), force, dryRun);
 
   if (commandExists("nvim")) {
     await runInstallStep("lazy.nvim sync", "nvim --headless '+Lazy! sync' +qa", dryRun);
@@ -377,11 +425,14 @@ async function createTools(ctx: ToolContext): Promise<Tool[]> {
       install: async (innerCtx) => runInstallStep("Install Gemini CLI", "bun add -g @google/gemini-cli", innerCtx.dryRun),
     },
     {
-      id: "kami",
-      name: "@kami-pkm/kami",
-      getInstalledVersion: async () => getGlobalPackageVersion("@kami-pkm/kami"),
-      getLatestVersion: async () => fetchNpmLatestVersion("@kami-pkm/kami"),
-      install: async (innerCtx) => runInstallStep("Install @kami-pkm/kami", "bun add -g @kami-pkm/kami", innerCtx.dryRun),
+      id: "herdr",
+      name: "herdr (terminal multiplexer for AI coding agents)",
+      getInstalledVersion: async () => {
+        if (!commandExists("herdr")) return null;
+        return parseFirstVersion(runShell("herdr --version").stdout);
+      },
+      getLatestVersion: async () => fetchGithubLatestTag("herdrdev", "herdr"),
+      install: async (innerCtx) => runInstallStep("Install herdr", getHerdrInstallCommand(innerCtx), innerCtx.dryRun),
     },
     {
       id: "eza",
@@ -503,8 +554,12 @@ const main = defineCommand({
     }
 
     console.log("\n--------------------------------------------------");
+    info("Zsh environment");
+    await setupZsh(ctx);
+
+    console.log("\n--------------------------------------------------");
     info("Config setup");
-    await createDotfileSymlinks(Boolean(args.force), Boolean(args.dryRun), Boolean(args.yes));
+    await createDotfileSymlinks(Boolean(args.force), Boolean(args.dryRun));
 
     console.log("\n==================================================");
     info("Summary");

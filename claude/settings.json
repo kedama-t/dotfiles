@@ -20,11 +20,13 @@
       "WebSearch",
       "WebFetch"
     ],
-    "deny": [
-      "Bash(rm -rf:*)",
-      "Bash(sudo:*)",
+    "ask": [
       "Bash(curl:*)",
       "Bash(wget:*)",
+      "Bash(rm -rf:*)"
+    ],
+    "deny": [
+      "Bash(sudo:*)",
       "Bash(dd:*)",
       "Bash(chmod 777:*)",
       "Bash(mkfs:*)",
@@ -47,5 +49,7 @@
   },
   "language": "japanese",
   "syntaxHighlightingDisabled": false,
-  "autoUpdatesChannel": "latest"
+  "effortLevel": "high",
+  "autoUpdatesChannel": "latest",
+  "model": "opus"
 }

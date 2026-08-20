@@ -29,7 +29,7 @@ cd dotfiles
 ./setup.sh --yes
 
 # 実際には変更せず、実行内容だけ確認
-./setup.sh --dryRun
+./setup.sh --dryRun   # --dry-run も同じ
 ```
 
 ## インストールされるツール
@@ -40,8 +40,28 @@ cd dotfiles
 - **Claude Code**（Anthropic CLI）
 - **Codex CLI**
 - **Gemini CLI**
-- **@kami-pkm/kami**（bun 専用 npm パッケージ）
+- **herdr**（AI コーディングエージェント向けターミナルマルチプレクサ）
 - **eza**
+- **zsh** + **Oh My Zsh**（`zsh-autosuggestions` / `zsh-syntax-highlighting` プラグイン込み）
+
+## 配置される設定
+
+すべてシンボリックリンクで配置します。`~/.claude` や `~/.codex` には
+エージェントが生成する会話履歴やキャッシュが同居するため、
+ディレクトリ全体ではなく管理対象のエントリだけを個別にリンクします。
+
+| リンク元（リポジトリ） | リンク先 |
+|------|------|
+| `nvim/` | `~/.config/nvim` |
+| `zsh/.zshrc` | `~/.zshrc` |
+| `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` |
+| `claude/settings.json` | `~/.claude/settings.json` |
+| `claude/references/` | `~/.claude/references` |
+| `claude/commands/*` | `~/.claude/commands/*` |
+| `claude/skills/*` | `~/.claude/skills/*` |
+| `codex/skills/*` | `~/.codex/skills/*` |
+
+リンク先に実体がある場合は `.backup` を作成したうえで `--force` 指定時のみ置き換えます。
 
 ## Neovim設定
 

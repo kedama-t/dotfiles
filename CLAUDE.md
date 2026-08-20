@@ -4,29 +4,46 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is a personal dotfiles repository focused on Neovim configuration. The repository contains:
-
-- Neovim configuration using modern Lua-based setup with lazy.nvim plugin manager
-- Keyboard layout configuration for Choco60 rev.2 keyboard
-
-## Architecture and Structure
-
-### Neovim Configuration Structure
+Personal dotfiles repository. Contains the Neovim configuration, zsh configuration,
+shared configuration for AI coding agents (Claude Code / Codex), and a cross-platform
+setup script that links them into the home directory.
 
 ```
-nvim/
-├── init.lua           # Main configuration entry point
-├── lua/
-│   └── plugins.lua    # Plugin definitions and configurations
-└── lazy-lock.json     # Plugin version lockfile (managed by lazy.nvim)
+setup.sh              # Bootstraps Bun, then runs setup.ts
+setup.ts              # Interactive installer (citty-based CLI)
+nvim/                 # Neovim config -> ~/.config/nvim
+  init.lua            # Entry point (options, keymaps, LSP)
+  lua/plugins.lua     # Plugin definitions
+  lazy-lock.json      # Plugin version lockfile (managed by lazy.nvim)
+zsh/.zshrc            # -> ~/.zshrc (assumes Oh My Zsh + plugins)
+claude/               # -> linked entry by entry into ~/.claude
+  CLAUDE.md           # Global user instructions
+  settings.json       # Permissions and Claude Code settings
+  references/         # Detailed guidance referenced from CLAUDE.md
+  skills/             # Agent skills
+codex/skills/         # -> linked entry by entry into ~/.codex/skills
+keyboard/             # Choco60 rev.2 layout (manual setup, not automated)
 ```
+
+## Setup Script
+
+- `setup.sh` only bootstraps Bun and delegates to `setup.ts`; all real logic lives in `setup.ts`.
+- Adding a tool means appending a `Tool` entry in `createTools()` with installed-version
+  detection, latest-version lookup, and an install command.
+- Config placement is **symlink only**. `~/.claude` and `~/.codex` hold agent-generated
+  conversation history and caches, so they are linked entry by entry — never as a whole
+  directory, which would delete that data.
+- Verify changes with `bun run setup.ts --dryRun --yes`; it performs no writes.
+- See `PLAN.md` for the full specification, including what is intentionally unimplemented.
+
+## Neovim Configuration
 
 ### Key Architecture Decisions
 
-1. **Plugin Manager**: Uses lazy.nvim for plugin management with lazy loading capabilities
-2. **Configuration Style**: Modern Lua-based configuration (no legacy vimscript)
-3. **LSP Setup**: Uses mason.nvim + mason-lspconfig.nvim for LSP server management
-4. **Completion**: Uses built-in vim.lsp.completion (Neovim 0.11+) instead of external completion plugins
+1. **Plugin Manager**: lazy.nvim, bootstrapped automatically from `init.lua`
+2. **Configuration Style**: modern Lua-based configuration (no legacy vimscript)
+3. **LSP Setup**: mason.nvim + mason-lspconfig.nvim for LSP server management
+4. **Completion**: built-in `vim.lsp.completion` (Neovim 0.11+) instead of an external plugin
 
 ### Core Plugin Categories
 
@@ -35,27 +52,11 @@ nvim/
 - **LSP/Development**: mason.nvim ecosystem for language server management
 - **Syntax**: nvim-treesitter for syntax highlighting and parsing
 
-## Common Development Tasks
+### Common Tasks
 
-### Plugin Management
-
-- Add new plugins to `nvim/lua/plugins.lua`
-- Plugin installations are automatically handled by lazy.nvim
-- Lock file (`lazy-lock.json`) tracks exact plugin versions
-
-### LSP Configuration
-
-- LSP servers are managed through mason.nvim
-- Auto-formatting is enabled for LSP-capable buffers on save
-- Completion is triggered automatically while typing
-
-### Key Configuration
-
-- Leader key is set to space (`<Leader>` = ` `)
-- Custom keymaps are defined in `nvim/init.lua` (global) and `nvim/lua/plugins.lua` (plugin-specific)
-- See README.md for complete keymap reference
-
-### File Encoding Support
-
-- Configured for Japanese development with support for UTF-8, UTF-16, EUC-JP, and Shift-JIS encodings
-- Special command `<Leader>sjis` for opening files with Shift-JIS encoding
+- Add new plugins to `nvim/lua/plugins.lua`; lazy.nvim installs them and updates `lazy-lock.json`.
+- LSP servers are managed through mason.nvim; auto-formatting runs on save for LSP-capable buffers.
+- Leader key is space. Global keymaps live in `nvim/init.lua`, plugin-specific ones in
+  `nvim/lua/plugins.lua`. See README.md for the complete keymap reference.
+- Encoding support is tuned for Japanese development (UTF-8, UTF-16, EUC-JP, Shift-JIS);
+  `<Leader>sjis` reopens the current file as Shift-JIS.

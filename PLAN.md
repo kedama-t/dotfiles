@@ -1,13 +1,14 @@
-# Environment Setup Script Plan (setup.sh)
+# Environment Setup Script Plan
 
 ## 概要
 
-Mac および Linux で共通して使える環境構築スクリプト`setup.sh`の仕様書
+Mac および Linux で共通して使える環境構築スクリプトの仕様書。
+エントリポイントは `setup.sh`（Bun のブートストラップのみ）、本体は `setup.ts`。
 
 ## 目的
 
 - dotfiles リポジトリの設定を自動でシステムに適用
-- Mac（homebrew）と Linux（apt/yum）両方に対応
+- Mac（Homebrew）と Linux（apt/dnf/yum）両方に対応
 - 冪等性を保証（何度実行しても安全）
 
 ## 対象 OS
@@ -17,196 +18,103 @@ Mac および Linux で共通して使える環境構築スクリプト`setup.sh
 
 ## セットアップ内容
 
-### 1. 必須ツールのインストール
+### 1. ツールのインストール
 
-#### 共通ツール
+`setup.ts` は各ツールについて「インストール済みバージョン」と「最新バージョン」を取得し、
+最新でなければインストール／更新するかを対話で確認する。
 
-- git
-- curl
-- fzf
-- gh
+| ツール | 用途 | バージョン取得元 | インストール方法 |
+|------|------|------|------|
+| Bun | JS/TS ランタイム・パッケージマネージャ | - | `setup.sh` が `curl -fsSL https://bun.sh/install \| bash` で先に導入 |
+| Neovim（0.11+） | エディタ | GitHub releases | brew / apt（neovim-ppa）/ dnf / yum |
+| uv | Python パッケージ・プロジェクト管理 | GitHub releases | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
+| Claude Code | Anthropic CLI | npm registry | `curl -fsSL https://claude.ai/install.sh \| bash` |
+| Codex CLI | OpenAI CLI | npm registry | `bun add -g @openai/codex` |
+| Gemini CLI | Google CLI | npm registry | `bun add -g @google/gemini-cli` |
+| herdr | AI コーディングエージェント向けターミナルマルチプレクサ | GitHub releases | macOS は `brew install herdr`、他は `curl -fsSL https://herdr.dev/install.sh \| sh` |
+| eza | `ls` の代替（`.zshrc` でエイリアス） | GitHub releases | brew / apt / dnf / yum |
 
-#### 開発ツール
+### 2. Zsh 環境のセットアップ
 
-- Neovim（最新版、0.11+）
-- JavaScript/TypeScript 環境
-  - Bun（Node.js の代替ランタイム / パッケージマネージャ）
-- Python 環境
-  - uv（Python package and project manager）
-- Claude Code（Anthropic CLI）
+`.zshrc` が Oh My Zsh とプラグインの存在を前提にしているため、
+シンボリックリンクを張る前に以下を用意する。
 
-#### シェル環境
+- zsh 本体（未導入ならパッケージマネージャで導入）
+- Oh My Zsh（`--unattended --keep-zshrc` で導入。dotfiles の `.zshrc` を保護する）
+- `zsh-autosuggestions` / `zsh-syntax-highlighting`（`$ZSH/custom/plugins/` へ `git clone`）
 
-- zsh
-- Oh My Zsh
-- 推奨プラグイン（zsh-autosuggestions、zsh-syntax-highlighting）
+### 3. 設定ファイルの配置
 
-#### その他のツール
-
-- eza
-  - `ls`を`eza -l --no-user`のエイリアスとして使います。
-
-### 2. 設定ファイルの配置
-
-#### Neovim 設定
-
-- シンボリックリンクの作成
+すべてシンボリックリンクで配置する。
 
 ```
-~/.config/nvim/init.lua -> dotfiles/nvim/init.lua
-~/.config/nvim/lua/ -> dotfiles/nvim/lua/
+~/.config/nvim            -> nvim/
+~/.zshrc                  -> zsh/.zshrc
+~/.claude/CLAUDE.md       -> claude/CLAUDE.md
+~/.claude/settings.json   -> claude/settings.json
+~/.claude/references      -> claude/references/
+~/.claude/commands/*      -> claude/commands/*
+~/.claude/skills/*        -> claude/skills/*
+~/.codex/skills/*         -> codex/skills/*
 ```
 
-- lazy.nvim の自動インストール
-- 初回起動時のプラグイン同期
+`~/.claude` と `~/.codex` にはエージェントが生成する会話履歴・セッション・キャッシュが
+同居するため、ディレクトリ単位ではなく **エントリ単位** でリンクする。
+ディレクトリごとコピー／置換すると、これらのデータを巻き込んで消してしまう。
 
-#### Zsh 設定
+リンク先に実体がある場合は `.backup` を作成したうえで、`--force` 指定時のみ置き換える。
+指定がなければ警告してスキップする。
 
-- シンボリックリンクの作成
-
-```
-~/.zshrc -> dotfiles/zsh/.zshrc
-```
-
-- Oh My Zsh の自動インストール
-- デフォルトシェルを zsh に変更
-- 推奨プラグインのインストール
-  - zsh-autosuggestions
-  - zsh-syntax-highlighting
-
-#### JavaScript/TypeScript 環境設定
-
-- Bun のインストール（`curl -fsSL https://bun.sh/install | bash`）
-- グローバルパッケージは `bun add -g` で導入
-
-#### Python 環境設定
-
-- uv のインストール
-
-#### Claude Code 設定
-
-- Claude Code CLI のインストール
-- 基本的な設定ファイルの配置
-- 認証はユーザーが初回利用時に実施するので対応不要。
-
-### 3. OS ごとの具体的なインストール方法
-
-#### macOS
-
-- Homebrew の自動インストール
-- `brew install` コマンドでパッケージインストール
-- Bun のインストール（`curl -fsSL https://bun.sh/install | bash`）
-- uv のインストール（`curl -LsSf https://astral.sh/uv/install.sh | sh`）
-- Claude Code のインストール（`curl -fsSL https://claude.ai/install.sh | bash`）
-- macOS 特有の設定適用
-
-#### Linux（Ubuntu/Debian）
-
-- `apt update && apt install` でパッケージインストール
-- AppImage や snap パッケージの利用（Neovim 等）
-- Bun のインストール（`curl -fsSL https://bun.sh/install | bash`）
-- uv のインストール（`curl -LsSf https://astral.sh/uv/install.sh | sh`）
-- Claude Code のインストール（`curl -fsSL https://claude.ai/install.sh | bash`）
-
-#### Linux（CentOS/RHEL）
-
-- `yum install` または `dnf install` でパッケージインストール
-- EPEL リポジトリの有効化
-- Bun のインストール（`curl -fsSL https://bun.sh/install | bash`）
-- uv のインストール（`curl -LsSf https://astral.sh/uv/install.sh | sh`）
-- Claude Code のインストール（`curl -fsSL https://claude.ai/install.sh | bash`）
+配置後、`nvim` があれば `nvim --headless '+Lazy! sync' +qa` でプラグインを同期する
+（lazy.nvim 自体は `nvim/init.lua` が起動時に自動ブートストラップする）。
 
 ### 4. 実装仕様
 
-#### スクリプト構造
-
-```bash
-#!/bin/bash
-
-# OS検出
-detect_os()
-
-# パッケージマネージャー検出
-detect_package_manager()
-
-# 必須ツールインストール
-install_essential_tools()
-
-# 開発ツールインストール
-install_dev_tools()
-
-# Zsh + Oh My Zsh セットアップ
-setup_zsh()
-
-# JavaScript/TypeScript環境セットアップ（Bun）
-setup_bun()
-
-# Python環境セットアップ
-setup_python()
-
-# Claude Code セットアップ
-setup_claude_code()
-
-# Neovim設定配置
-setup_neovim()
-
-# シンボリックリンク作成
-create_symlinks()
-
-# 権限設定
-set_permissions()
-
-# インストール確認
-verify_installation()
-```
-
 #### 冪等性の保証
 
-- 既存インストールの確認
-- バックアップファイルの作成
-- 重複インストールの回避
+- インストール前に既存バージョンを確認し、最新なら対話をスキップ
+- シンボリックリンクが既に正しい向きなら何もしない
+- 置き換え時は `.backup` を作成（既に存在する場合は上書きしない）
 
 #### エラーハンドリング
 
-- 各ステップでの実行結果確認
-- 失敗時のロールバック機能
-- 詳細なログ出力
+- 各ツールのインストール結果を `installed` / `skipped` / `failed` で集計し、最後にサマリを表示
+- 1 つでも `failed` があれば終了コード 1
 
-#### オプション機能
+#### オプション
 
-- `--dry-run`: 実行内容の確認のみ
-- `--force`: 既存設定の強制上書き
-- `--minimal`: 最小限のツールのみインストール
+| オプション | 内容 |
+|------|------|
+| `--dryRun`（`--dry-run`） | 実行内容の表示のみ。ファイルは一切変更しない |
+| `--force` | シンボリックリンク先に実体がある場合も置き換える |
+| `--yes` | 対話確認をスキップしてすべて実行する |
+| `--help` | ヘルプ表示（`setup.sh` が処理） |
 
 ### 5. 使用方法
 
 ```bash
-# 基本実行
-./setup.sh
-
-# ドライラン
-./setup.sh --dry-run
-
-# 強制実行
-./setup.sh --force
-
-# 最小インストール
-./setup.sh --minimal
+./setup.sh              # 基本実行
+./setup.sh --dry-run    # ドライラン
+./setup.sh --force      # 既存設定の置き換えを許可
+./setup.sh --yes        # 確認をスキップ
 ```
 
 ### 6. 注意事項
 
-- 管理者権限が必要な場合は sudo を使用
-- 既存の設定ファイルは`.backup`として保存
+- パッケージインストールで sudo を求められる場合がある
+- 置き換えられた設定ファイルは `.backup` として保存される
 - インターネット接続が必要
-- 実行前に重要なファイルのバックアップを推奨
+- Claude Code / Codex / Gemini の認証は初回利用時にユーザーが実施する
 
-### 7. 今後の拡張予定
+### 7. 未実装 / 今後の拡張予定
 
+- 汎用ツール（git、curl、fzf、gh）のインストール
+- `--minimal`（最小限のツールのみインストール）
+- デフォルトシェルの zsh への変更（`chsh` が対話的なため手動）
+- 失敗時のロールバック
 - Git 設定の自動適用
 - 他のエディタ（VSCode 等）の設定対応
-- ターミナルエミュレータの設定
-- フォント設定の自動化
+- ターミナルエミュレータ・フォント設定
 
 ### 8. 対象外項目
 
